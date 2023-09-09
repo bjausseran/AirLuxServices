@@ -2,7 +2,8 @@ import mysql, { Pool } from "mysql2";
 import { Controller } from "./Controller";
 
 let pool =  mysql.createPool({
-  host: 'dbcloud',
+  //host: 'dbcloud',
+  host: 'localhost',
   user: 'root',
   password: 'password',
   database: 'AirLuxDB',
@@ -12,45 +13,109 @@ let pool =  mysql.createPool({
 export class UserController implements Controller
 {
 // @ device_id field missing
-  // Function to select data from the users table
-  select() {
-    pool.getConnection(function(err, connection) {
-      if (err) throw err; // not connected!
+connect(email: string, password: string): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        reject(err); // Reject the promise with the error if connection fails
+      }
+
       // Use the connection
-
-    // SQL query
-    let sql = 'SELECT * FROM users';
-    connection.query(sql, function(err, result) {
-      if (err) throw err;
-      console.log(result);
+      try {
+        const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
+        connection.query(sql, [email, password], (queryErr: Error | null, results: any[]) => {
+          if (queryErr) {
+            reject(queryErr); // Reject the promise with the query error
+          }
+          console.log('try to connect, results length = ' + results.length);
+          // Check if a user with the provided email and password was found
+          if (results.length === 0) {
+            reject(undefined); // Resolve with null if no user was found
+          } else {
+            console.log('try to connect, results = ' + results[0]['name']);
+            resolve(results[0]['id']); // Resolve with the first user found
+          }
+        });
+      } catch (error) {
+        console.log(error);
+        reject(error); // Reject the promise with any other errors
+      } finally {
+        connection.release();
+      }
     });
-    connection.release();
-  })
+  });
+}
+  // Function to select data from the buildings table
+  select(where: string | undefined): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      pool.getConnection((err, connection) => {
+        if (err) {
+          reject(err); // Reject the promise with the error if connection fails
+          return;
+        }
+  
+        // Use the connection
+        try {
+          // SQL query
+          const sql = where === undefined ? 'SELECT * FROM users' : `SELECT * FROM users WHERE ${where}`;
+          connection.query(sql, (queryErr, result) => {
+            if (queryErr) {
+              reject(queryErr); // Reject the promise with the query error
+              return;
+            }
+  
+            console.log('captorValues select successfully');
+            const jsonString = JSON.stringify(result);
+            resolve(jsonString); // Resolve the promise with the JSON string
+          });
+        } catch (error) {
+          console.log(error);
+          reject(error); // Reject the promise with any other errors
+        } finally {
+          connection.release();
+        }
+      });
+    });
   }
-
-  // Function to delete data from the buildings table
-  find(id: string) {
-    // Check for invalid input
-    if (!id) {
-      console.error('Invalid input. id is a required field.');
-      return;
+  
+    // Function to delete data from the captor_values table
+    find(id: string): Promise<string> {
+      return new Promise<string>((resolve, reject) => {
+        pool.getConnection((err, connection) => {
+          if (err) {
+            reject(err); // Reject the promise with the error if connection fails
+            return;
+          }if (!id) {
+            let err = ('Invalid input. id is a required field.');
+            reject(err);
+            return;
+          }
+    
+          // Use the connection
+          try {
+            // SQL query using prepared statement
+            let sql = 'SELECT * FROM users WHERE id = ?';
+            let data = [id];
+          
+            connection.execute(sql, data, function(err, result) {
+              if (err) {
+                reject(err); // Reject the promise with the query error
+                return;
+              }
+    
+              console.log('captorValues select successfully');
+              const jsonString = JSON.stringify(result);
+              resolve(jsonString); // Resolve the promise with the JSON string
+            });
+          } catch (error) {
+            console.log(error);
+            reject(error); // Reject the promise with any other errors
+          } finally {
+            connection.release();
+          }
+        });
+      });
     }
-    pool.getConnection(function(err, connection) {
-      if (err) throw err; // not connected!
-      // Use the connection
-  
-  
-    // SQL query using prepared statement
-    let sql = 'SELECT * FROM users WHERE id = ?';
-    let data = [id];
-  
-    connection.execute(sql, data, function(err, result) {
-      if (err) throw err;
-      console.log('users deleted successfully');
-    });
-    connection.release();
-  })
-  }
   
   // Function to insert data into the users table
   insert(json: string) {

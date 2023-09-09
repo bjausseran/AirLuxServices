@@ -1,5 +1,6 @@
 import { RawData, WebSocket } from "ws";
 import { FSM } from "./fsm/fsm";
+import { isStringObject } from "util/types";
 
 
 function rawDataToString(data: RawData) {
@@ -13,6 +14,8 @@ function rawDataToString(data: RawData) {
 
 const wss = new WebSocket.Server({ port: 6001 });
 
+console.log('wss status = ' +  wss);
+
 let fsm = new FSM()
 
 wss.on('connection', (ws) => {
@@ -20,11 +23,13 @@ wss.on('connection', (ws) => {
 
     ws.on('message', (message) => {
         console.log(`Received message: ${message}`);
-        fsm.setContext(rawDataToString(message));
+        fsm.setContext(rawDataToString(message), ws);
         fsm.startFsm(); 
     });
 
-    ws.send('Welcome to the server!');
+    //ws.send('home/captor_values/0000001/action');
+    console.log(`SENS WS MESSAGE : 'tolocal//captor_values//0000003//1'`);
+    ws.send('tolocal//captor_values//0000003//1');
 });
 
 // let id = 9445166;

@@ -1,5 +1,6 @@
 import mysql, { Pool } from "mysql2";
 import { Controller } from "./Controller";
+import { json } from "stream/consumers";
 
 let pool =  mysql.createPool({
   host: 'dbcloud',
@@ -12,54 +13,75 @@ let pool =  mysql.createPool({
 export class CaptorValueController implements Controller
 {
   // Function to select data from the buildings table
-  select() {
-    pool.getConnection(function(err, connection) {
-      if (err) throw err; // not connected!
+  select(): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        reject(err); // Reject the promise with the error if connection fails
+        return;
+      }
+
       // Use the connection
-  
       try {
         // SQL query
-        let sql = 'SELECT * FROM captor_values';
-        connection.query(sql, function(err, result) {
+        const sql = 'SELECT * FROM captor_values';
+        connection.query(sql, (queryErr, result) => {
+          if (queryErr) {
+            reject(queryErr); // Reject the promise with the query error
+            return;
+          }
+
           console.log('captorValues select successfully');
+          const jsonString = JSON.stringify(result);
+          resolve(jsonString); // Resolve the promise with the JSON string
         });
       } catch (error) {
         console.log(error);
-      }
-      finally {
+        reject(error); // Reject the promise with any other errors
+      } finally {
         connection.release();
       }
-  })
-  }
+    });
+  });
+}
 
   // Function to delete data from the captor_values table
-  find(id: string) {
-    // Check for invalid input
-    if (!id) {
-      console.error('Invalid input. id is a required field.');
-      return;
-    }
-    pool.getConnection(function(err, connection) {
-      if (err) throw err; // not connected!
-      try {
-        // SQL query using prepared statement
-        let sql = 'SELECT * FROM captor_values WHERE id = ?';
-        let data = [id];
-      
-        connection.execute(sql, data, function(err, result) {
-          if (err) throw err;
-          console.log('captorValues deleted successfully');
-        });
+  find(id: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      pool.getConnection((err, connection) => {
+        if (err) {
+          reject(err); // Reject the promise with the error if connection fails
+          return;
+        }if (!id) {
+          let err = ('Invalid input. id is a required field.');
+          reject(err);
+          return;
+        }
+  
+        // Use the connection
+        try {
+          // SQL query using prepared statement
+          let sql = 'SELECT * FROM captor_values WHERE id = ?';
+          let data = [id];
         
-      } catch (error) {
-        console.log(error);
-      }
-      finally{
-        connection.release();
-      }
+          connection.execute(sql, data, function(err, result) {
+            if (err) {
+              reject(err); // Reject the promise with the query error
+              return;
+            }
   
-  
-  })
+            console.log('captorValues select successfully');
+            const jsonString = JSON.stringify(result);
+            resolve(jsonString); // Resolve the promise with the JSON string
+          });
+        } catch (error) {
+          console.log(error);
+          reject(error); // Reject the promise with any other errors
+        } finally {
+          connection.release();
+        }
+      });
+    });
   }
   
 // Function to insert data into the captor_values table

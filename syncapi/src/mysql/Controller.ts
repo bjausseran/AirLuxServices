@@ -1,6 +1,7 @@
+
 export interface Controller{
-    select() : void;
-    find(id: string) : void;
+    select(where: string | undefined, join: string | undefined) : Promise<string>;
+    find(id: string) : Promise<string>;
     insert(json: string) : void;
     update(json: string) : void;
     remove(id: string) : void;

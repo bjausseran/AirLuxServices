@@ -2,6 +2,9 @@ const WebSocket = require('ws');
 
 const ws = new WebSocket('ws://syncapi:6001');
 
+
+
+
 function start(){
   try {
     const ws = new WebSocket('ws://syncapi:6001');

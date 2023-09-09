@@ -1,22 +1,22 @@
 FROM redis
 
-# Installation mysql,  et extensions
-RUN apt-get update && apt-get install -y redis-server --option=Dpkg::Options::=--force-confdef \
-    && apt-get install -y ufw \
-    && apt-get install -y redis-tools \
-    && apt-get install -y redis-server
+# # Installation mysql,  et extensions
+# RUN apt-get update && apt-get install -y redis-server --option=Dpkg::Options::=--force-confdef \
+#     && apt-get install -y ufw \
+#     && apt-get install -y redis-tools \
+#     && apt-get install -y redis-server
 
-WORKDIR /home
+# WORKDIR /home
 
-#COPY /redis/redis.conf /etc/redis/redis.conf
+# #COPY /redis/redis.conf /etc/redis/redis.conf
 
-COPY /dblocal/set_up_redis.sh /home/set_up_redis.sh
+# COPY /dblocal/set_up_redis.sh /home/set_up_redis.sh
 
-COPY /dblocal/start_pubsub.sh /home/start_pubsub.sh
+# COPY /dblocal/start_pubsub.sh /home/start_pubsub.sh
 
-RUN chmod u+x set_up_redis.sh \
-    && chmod u+x start_pubsub.sh
+# RUN chmod u+x set_up_redis.sh \
+#     && chmod u+x start_pubsub.sh
 
-RUN ["/bin/bash", "/home/set_up_redis.sh"]
+# RUN ["/bin/bash", "/home/set_up_redis.sh"]
 
-CMD ["/bin/bash", "/home/start_pubsub.sh"]
+# CMD ["/bin/bash", "/home/start_pubsub.sh"]
