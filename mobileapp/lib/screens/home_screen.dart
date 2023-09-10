@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:js_interop';
 
 import 'package:airlux/screens/automations_screen.dart';
 import 'package:airlux/screens/ble_devices_screen.dart';
+import 'package:airlux/screens/globals/models/building.dart';
 import 'package:airlux/screens/palces_screen.dart';
 import 'package:airlux/screens/users_screen.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +13,10 @@ import 'package:airlux/widgets/custom_card.dart';
 import 'globals/user_context.dart' as user_context;
 
 class HomeScreen extends StatefulWidget {
-  final WebSocketChannel webSocketChannel;
-  
-  const HomeScreen({required this.webSocketChannel, Key? key}) : super(key: key);
+  final WebSocketChannel webSocketChannel =
+      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -20,31 +24,44 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   StreamSubscription? _subscription;
+  late List<Building> data;
 
   @override
   void initState() {
     super.initState();
 
-    _subscription = widget.webSocketChannel.stream.listen((message) {
-      // Handle incoming message here
-      if (message.startsWith("buildings")) {
-        // Handle the message as needed
-      }
-    });
-
     widget.webSocketChannel.sink.add(
         "tocloud//buildings//join{#}user_building ON buildings.id = user_building.building_id{#}where{#}user_id = ${user_context.userId}//get");
+
+    // widget.webSocketChannel.sink.add(
+    //     "tocloud//room//where{#} building_id IN buildings.id = user_building.building_id{#}where{#}user_id = ${user_context.userId}//get");
+
+    _subscription = widget.webSocketChannel.stream.listen((message) {
+      // Handle incoming message here
+      Iterable l = json.decode(message);
+      data = List<Building>.from(l.map((model) => Building.fromJson(model)));
+
+      // Données pour le menu déroulant
+      setState(() {
+        _selectedBuilding = data[0];
+        _buildings = data;
+
+        // Index de la pièce sélectionnée
+        _selectedRoomIndex = 0;
+        _selectedRoom = 'Tout';
+      });
+    });
   }
 
   @override
   void dispose() {
-    _subscription?.cancel(); // Cancel the stream subscription
     super.dispose();
+    _subscription?.cancel(); // Cancel the stream subscription
   }
 
   // Données pour le menu déroulant
-  String? _selectedBuilding = 'Bâtiment 1';
-  final List<String> _buildings = ['Bâtiment 1', 'Bâtiment 2'];
+  late Building? _selectedBuilding;
+  late List<Building> _buildings = List.empty(growable: true);
 
   // Index de la pièce sélectionnée
   int _selectedRoomIndex = 0;
@@ -150,23 +167,33 @@ class HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
           // title: const Text('Accueil'),
-          title: DropdownButton<String>(
-            value: _selectedBuilding,
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedBuilding = newValue;
-              });
-            },
-            underline: Container(),
-            items: _buildings.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            style: Theme.of(context).textTheme.titleLarge,
-            icon: const Icon(Icons.keyboard_arrow_down),
-          ),
+          title: _buildings != null && _buildings.isNotEmpty
+              ? DropdownButton<String>(
+                  value: _selectedBuilding.isUndefinedOrNull
+                      ? ""
+                      : _selectedBuilding!.name,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (_selectedBuilding.isUndefinedOrNull) return;
+                      for (int i = 0; i < _buildings.length; i++) {
+                        if (_buildings[i].name == newValue) {
+                          _selectedBuilding = _buildings[i];
+                        }
+                      }
+                    });
+                  },
+                  underline: Container(),
+                  items: _buildings
+                      .map<DropdownMenuItem<String>>((Building value) {
+                    return DropdownMenuItem<String>(
+                      value: value.name,
+                      child: Text(value.name),
+                    );
+                  }).toList(),
+                  style: Theme.of(context).textTheme.titleLarge,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                )
+              : CircularProgressIndicator(), // Display a loading indicator,
           centerTitle: false,
           automaticallyImplyLeading: false,
           actions: <Widget>[
@@ -218,110 +245,102 @@ class HomeScreenState extends State<HomeScreen> {
                   }
                 })
           ]),
-      body: Column(
-        children: [
-          Container(
-            // width: 100,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            height: 20,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _selectedBuilding == 'Bâtiment 1'
-                  ? _building1.length
-                  : _building2.length,
-              itemBuilder: (BuildContext context, int index) {
-                final String roomName = _selectedBuilding == 'Bâtiment 1'
-                    ? _building1[index]
-                    : _building2[index];
-                final bool isSelected = index == _selectedRoomIndex;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _selectedRoomIndex = index;
-                        _selectedRoom = roomName;
-                      });
-                    },
-                    child: Text(
-                      roomName,
-                      style: TextStyle(
-                        color: isSelected ? Colors.lime : Colors.black,
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  children:
-                      /* Focntionnement de l'affichage de la liste des cards :  
-                      - Si la pièce selectionée est "Tout" alors on affiche toutes les cartes
-                      - Sinon on affiche que les cartes qui correspondent à la pièce selectionnée
-                      */
-                      _selectedRoom == "Tout"
-                          ? allCards
-                              .map((card) {
-                                return CustomCard(
-                                    icon: card.icon,
-                                    outlinedIcon: card.outlinedIcon,
-                                    title: card.title,
-                                    subtitle: card.subtitle,
-                                    pillTextOn: card.pillTextOn,
-                                    pillTextOff: card.pillTextOff,
-                                    switchValue: card.switchValue,
-                                    building: card.building,
-                                    room: card.room,
-                                    onSwitchChanged: card.onSwitchChanged);
-                              })
-                              .where(
-                                  (card) => card.building == _selectedBuilding)
-                              .toList()
-                          : allCards
-                              .map((card) {
-                                return CustomCard(
-                                    icon: card.icon,
-                                    outlinedIcon: card.outlinedIcon,
-                                    title: card.title,
-                                    subtitle: card.subtitle,
-                                    pillTextOn: card.pillTextOn,
-                                    pillTextOff: card.pillTextOff,
-                                    switchValue: card.switchValue,
-                                    building: card.building,
-                                    room: card.room,
-                                    onSwitchChanged: card.onSwitchChanged);
-                              })
-                              .where((card) =>
-                                  card.room == _selectedRoom &&
-                                  card.building == _selectedBuilding)
-                              .toList(),
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _sendMessage,
-      //   tooltip: 'Send message',
-      //   child: const Icon(Icons.send),
-      // ), //
+      // body: Column(
+      //   children: [
+      //     Container(
+      //       // width: 100,
+      //       padding: const EdgeInsets.symmetric(horizontal: 10),
+      //       height: 20,
+      //       child: _buildings != null && _buildings.isNotEmpty
+      //           ? ListView.builder(
+      //               scrollDirection: Axis.horizontal,
+      //               itemCount: _selectedBuilding == 'Bâtiment 1'
+      //                   ? _building1.length
+      //                   : _building2.length,
+      //               itemBuilder: (BuildContext context, int index) {
+      //                 final String roomName = _selectedBuilding == 'Bâtiment 1'
+      //                     ? _building1[index]
+      //                     : _building2[index];
+      //                 final bool isSelected = index == _selectedRoomIndex;
+      //                 return Padding(
+      //                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      //                   child: InkWell(
+      //                     onTap: () {
+      //                       setState(() {
+      //                         _selectedRoomIndex = index;
+      //                         _selectedRoom = roomName;
+      //                       });
+      //                     },
+      //                     child: Text(
+      //                       roomName,
+      //                       style: TextStyle(
+      //                         color: isSelected ? Colors.lime : Colors.black,
+      //                         fontWeight: isSelected
+      //                             ? FontWeight.bold
+      //                             : FontWeight.normal,
+      //                         fontSize: 16.0,
+      //                       ),
+      //                     ),
+      //                   ),
+      //                 );
+      //               },
+      //             )
+      //           : CircularProgressIndicator(), // Display a loading indicator,
+      //     ),
+      //     const SizedBox(
+      //       height: 20,
+      //     ),
+      //     Expanded(
+      //       child: SafeArea(
+      //         child: SingleChildScrollView(
+      //           child: Column(
+      //             children:
+      //                 /* Focntionnement de l'affichage de la liste des cards :
+      //                 - Si la pièce selectionée est "Tout" alors on affiche toutes les cartes
+      //                 - Sinon on affiche que les cartes qui correspondent à la pièce selectionnée
+      //                 */
+      //                 _selectedRoom == "Tout"
+      //                     ? allCards
+      //                         .map((card) {
+      //                           return CustomCard(
+      //                               icon: card.icon,
+      //                               outlinedIcon: card.outlinedIcon,
+      //                               title: card.title,
+      //                               subtitle: card.subtitle,
+      //                               pillTextOn: card.pillTextOn,
+      //                               pillTextOff: card.pillTextOff,
+      //                               switchValue: card.switchValue,
+      //                               building: card.building,
+      //                               room: card.room,
+      //                               onSwitchChanged: card.onSwitchChanged);
+      //                         })
+      //                         .where(
+      //                             (card) => card.building == _selectedBuilding)
+      //                         .toList()
+      //                     : allCards
+      //                         .map((card) {
+      //                           return CustomCard(
+      //                               icon: card.icon,
+      //                               outlinedIcon: card.outlinedIcon,
+      //                               title: card.title,
+      //                               subtitle: card.subtitle,
+      //                               pillTextOn: card.pillTextOn,
+      //                               pillTextOff: card.pillTextOff,
+      //                               switchValue: card.switchValue,
+      //                               building: card.building,
+      //                               room: card.room,
+      //                               onSwitchChanged: card.onSwitchChanged);
+      //                         })
+      //                         .where((card) =>
+      //                             card.room == _selectedRoom &&
+      //                             card.building == _selectedBuilding)
+      //                         .toList(),
+      //           ),
+      //         ),
+      //       ),
+      //     )
+      //   ],
+      // ),
     );
   }
-
-  // void _sendMessage() {
-  //   if (emailController.text.isNotEmpty) {
-  //     testChannel.sink.add(emailController.text);
-  //   }
-  // }
 }

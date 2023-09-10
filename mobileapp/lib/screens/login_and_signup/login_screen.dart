@@ -8,16 +8,16 @@ import 'package:airlux/widgets/custom_textfield.dart';
 import '../globals/user_context.dart' as user_context;
 
 class LoginScreen extends StatefulWidget {
-  final WebSocketChannel webSocketChannel;
+  final WebSocketChannel webSocketChannel =
+      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
 
-  LoginScreen({required this.webSocketChannel, Key? key}) : super(key: key);
+  LoginScreen({Key? key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   StreamSubscription? _subscription;
 
   final emailController = TextEditingController();
@@ -26,31 +26,19 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-
-    _subscription = widget.webSocketChannel.stream.listen((message) {
-      // Handle incoming message here
-      if (message.startsWith("connection//true//")) {
-        var id = int.parse(message.substring(18));
-        user_context.userId = id;
-
-        goToHomeScreen(context: context);
-      }
-    });
   }
 
   @override
   void dispose() {
-    _subscription?.cancel();
     super.dispose();
+    _subscription?.cancel();
+    widget.webSocketChannel.sink.close();
   }
 
-  void goToHomeScreen({context: BuildContext}) {
-    
-    _subscription?.cancel();
-
+  Future<void> goToHomeScreen({context = BuildContext}) async {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => HomeScreen(webSocketChannel: widget.webSocketChannel),
+        builder: (context) => HomeScreen(),
       ),
     );
   }
@@ -108,8 +96,19 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 key: const ValueKey('login_button'),
                 onPressed: () {
-                  widget.webSocketChannel.sink
-                      .add("connect//user//${emailController.text}{#}${passwordController.text}");
+                  _subscription =
+                      widget.webSocketChannel.stream.listen((message) {
+                    // Handle incoming message here
+                    if (message.startsWith("connection//true//")) {
+                      var id = int.parse(message.substring(18));
+                      user_context.userId = id;
+
+                      goToHomeScreen(context: context);
+                    }
+                  });
+
+                  widget.webSocketChannel.sink.add(
+                      "connect//user//${emailController.text}{#}${passwordController.text}");
                 },
                 child: const Text('Connexion'),
               ),

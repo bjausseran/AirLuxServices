@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:airlux/screens/login_and_signup/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -7,8 +9,10 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final WebSocketChannel webSocketChannel =
+      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+  final streamController = StreamController.broadcast();
 
-  final WebSocketChannel webSocketChannel = WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
   MyApp({super.key});
 
   // This widget is the root our your application.
@@ -60,40 +64,7 @@ class MyApp extends StatelessWidget {
             textStyle: Theme.of(context).textTheme.bodySmall,
           ))),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      home: LoginScreen(webSocketChannel: webSocketChannel),
+      home: LoginScreen(),
     );
   }
 }
-
-// class MyHomePage extends StatefulWidget {
-//   // const MyHomePage({super.key, required this.title});
-//   const MyHomePage({super.key});
-
-//   // final String title;
-
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
-
-// class _MyHomePageState extends State<MyHomePage> {
-
-//   @override
-//   Widget build(BuildContext context) {
-
-//     return Scaffold(
-//       // appBar: AppBar(
-//       //   title: Text(widget.title),
-//       // ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: const <Widget>[
-//             Text(
-//               'Bonjour !',
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

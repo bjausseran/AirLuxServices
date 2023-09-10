@@ -7,13 +7,15 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final WebSocketChannel webSocketChannel = WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+  final WebSocketChannel webSocketChannel =
+      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
 
   group('login screen integration test', () {
     testWidgets('test presence of all elements on login screen',
         (tester) async {
       // Créer un widget MaterialApp avec la page de connexion
-      await tester.pumpWidget(MaterialApp(home: LoginScreen(webSocketChannel: webSocketChannel)));
+      await tester.pumpWidget(
+          MaterialApp(home: LoginScreen(webSocketChannel: webSocketChannel)));
 
       // Vérifier la présence du texte "Connectez vous !" à l'écran
       expect(find.text('Connectez vous !!'), findsOneWidget);

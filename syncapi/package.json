@@ -9,12 +9,12 @@
   "license": "ISC",
   "dependencies": {
     "@edium/fsm": "^2.1.4",
-    "mysql2": "^3.0.1",
+    "mysql2": "^3.6.1",
     "ws": "^8.12.0"
   },
   "description": "",
   "devDependencies": {
-    "@types/node": "^18.11.18",
+    "@types/node": "^18.17.15",
     "@types/ws": "^8.5.4",
     "typescript": "^4.9.5"
   }

@@ -5,10 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Attach to Chrome",
+            "port": 9222,
+            "request": "attach",
+            "type": "chrome",
+            "webRoot": "${workspaceFolder}/mobileapp"
+        },
+        {
             "name": "airlux",
             "request": "launch",
             "type": "dart",
-            "program": "${workspaceFolder}/mobileapp/lib/main.dart"
+            "program": "mobileapp/lib/main.dart",
         },
         {
             "name": "airlux (profile mode)",
