@@ -5,6 +5,7 @@ class CustomCard extends StatefulWidget {
   final IconData outlinedIcon;
   final String title;
   final String subtitle;
+  final String value;
   final String pillTextOn;
   final String pillTextOff;
   final bool switchValue;
@@ -18,6 +19,7 @@ class CustomCard extends StatefulWidget {
     required this.outlinedIcon,
     required this.title,
     required this.subtitle,
+    required this.value,
     required this.pillTextOn,
     required this.pillTextOff,
     required this.switchValue,
@@ -59,6 +61,7 @@ class CustomCardState extends State<CustomCard> {
                   _switchValue ? widget.icon : widget.outlinedIcon,
                   size: 40,
                 ),
+                Text(widget.value),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 5, horizontal: 10),

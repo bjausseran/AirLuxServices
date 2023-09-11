@@ -1,6 +1,5 @@
 FROM node:18
 
-
 COPY /localapp/package*.json ./
 
 RUN mkdir -p /home/localapp

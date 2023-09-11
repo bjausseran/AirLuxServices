@@ -6,19 +6,24 @@ const mqttPub = require("./mqtt/pub");
 
 function parseFromCloud(message){
     let parsed = message.split("//");
-    if(parsed[0] != "captor_values") 
+    if(parsed[0] == "tolocal") 
     {
-        let captorId =  parsed[1];
-        let value =  parsed[2];
+        let table =  parsed[1];
+        let captorId =  parsed[2];
+        let value =  parsed[3];
     
         //redis.postCaptorValue(captorId, value);
     
-        mqttPub.publish("home/captor_values/" + captorId + "/action", value);
-        console.log('MQTT PUBLISH : ', "home/captor_values/" + captorId + "/action");
+        mqttPub.publish(`home/${table}/${captorId}/action`, value);
+        console.log('MQTT PUBLISH : ', `subject: home/${table}/${captorId}/action, value: ${value}`);
     }
   
   }
 
+  ws.client.addEventListener("open", (event) => {
+    console.log(`Client connected to websocket port 6001`);
+    ws.client.send(`connect//box//${process.env.BUILDING_ID}`);
+  });
   
   ws.client.on('message', function message(data) {
     console.log('Web socket MESSAGE RECEIVED : ', data);

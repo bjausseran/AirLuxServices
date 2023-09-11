@@ -6,12 +6,12 @@ class Building {
     required this.name,
   });
 
-  int id;
+  String id;
   String name;
 
   Building.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
-        id = json['id'];
+      : name = json['name'].toString(),
+        id = json['id'].toString();
 
   Map<String, dynamic> toJson() => {
         'name': name,

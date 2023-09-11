@@ -5,10 +5,60 @@ export class BuildingController extends Controller
   constructor(){
     super();
     this.tableName = "buildings";
+    this.updateStatement = `UPDATE ${this.tableName} SET name = ?, type = ? WHERE id = ?`;
+    this.insertStatement = `INSERT INTO ${this.tableName} (id, name, type) VALUES (?, ?, ?)`;
+  }
+
+  getBuildingByCaptor(captorid: string): Promise<string> {
+      return new Promise<string>((resolve, reject) => {
+        
+        console.log(`Controller, ${this.tableName} getBuildingByCaptor : captorid = ${captorid}`);
+  
+        this.pool.getConnection((err, connection) => {
+          if (err) {
+              reject(err); // Reject the promise with the error if connection fails
+              return;
+            }
+    
+          // Use the connection
+          try {
+            // SQL query
+            let sql = `SELECT rooms.building_id FROM captors LEFT JOIN rooms ON captors.room_id = rooms.id WHERE captors.id = ${captorid} GROUP BY rooms.building_id `;
+            
+            console.log('BuildingController, select : sql = ' + sql);
+            
+            connection.query(sql, (queryErr, result) => {
+              if (queryErr) {
+                reject(queryErr); // Reject the promise with the query error
+                return;
+              }
+    
+              const jsonString = JSON.stringify(result);
+              resolve(jsonString); // Resolve the promise with the JSON string
+            });
+          } catch (error) {
+            console.log(error);
+            reject(error); // Reject the promise with any other errors
+          } finally {
+            connection.release();
+          }
+        });
+      });
+    
   }
     
-  updateStatement: string = `UPDATE ${this.tableName} SET name = ?, type = ? WHERE id = ?`;
-  insertStatement: string = `INSERT INTO ${this.tableName} (id, name, type) VALUES (?, ?, ?)`;
+  override checkUpdateData(parsedData: any) : boolean{
+    return !parsedData.id || !parsedData.name || !parsedData.type;
+  }
+  override checkInsertData(parsedData: any) : boolean{
+    return !parsedData.name || !parsedData.type || !parsedData.user_id;
+  }
+  override getUpdateData(parsedData: any) : any{
+    return [parsedData.id || !parsedData.name || !parsedData.type || !parsedData.type];
+  }
+  override getInsertData(parsedData: any) : any{
+    return [parsedData.name || !parsedData.type];
+  }
 
   // Function to delete data from the captor_values table
   findByUserId(userid: string): Promise<string> {
@@ -81,18 +131,6 @@ export class BuildingController extends Controller
     });
     connection.release();
   })
-  }
-  override checkUpdateData(parsedData: any) : boolean{
-    return !parsedData.id || !parsedData.name || !parsedData.type;
-  }
-  override checkInsertData(parsedData: any) : boolean{
-    return !parsedData.name || !parsedData.type || !parsedData.user_id;
-  }
-  override getUpdateData(parsedData: any) : any{
-    return [parsedData.id || !parsedData.name || !parsedData.type || !parsedData.type];
-  }
-  override getInsertData(parsedData: any) : any{
-    return [parsedData.name || !parsedData.type];
   }
   
 }

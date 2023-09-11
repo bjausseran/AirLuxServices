@@ -1,6 +1,8 @@
 import { RawData, WebSocket } from "ws";
 import { FSM } from "./fsm/fsm";
 import { isStringObject } from "util/types";
+import { Box } from "./models/box";
+import { GlobalContext } from "./models/globalContext";
 
 
 function rawDataToString(data: RawData) {
@@ -16,20 +18,23 @@ const wss = new WebSocket.Server({ port: 6001 });
 
 console.log('wss status = ' +  wss);
 
-let fsm = new FSM()
+var fsm = new FSM()
+var gc = new GlobalContext()
+
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
 
     ws.on('message', (message) => {
         console.log(`Received message: ${message}`);
-        fsm.setContext(rawDataToString(message), ws);
+        
+        fsm.setContext(rawDataToString(message), ws, gc);
         fsm.startFsm(); 
+            
     });
 
-    //ws.send('home/captor_values/0000001/action');
-    console.log(`SENS WS MESSAGE : 'tolocal//captor_values//0000003//1'`);
-    ws.send('tolocal//captor_values//0000003//1');
+    //console.log(`SENS WS MESSAGE : 'tolocal//captor_values//0000003//1'`);
+    //ws.send('tolocal//captor_values//0000003//1');
 });
 
 // let id = 9445166;

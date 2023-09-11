@@ -20,8 +20,8 @@ export class Controller{
 
     constructor(){
         this.pool = mysql.createPool({
-            //host: 'dbcloud',
-            host: 'localhost',
+            host: 'dbcloud',
+            //host: 'localhost',
             user: 'root',
             password: 'password',
             database: 'AirLuxDB',
@@ -116,7 +116,6 @@ export class Controller{
         console.error('Invalid input. captor_id and value are required fields.');
         return;
       }
-      console.log('captor_id = ' + parsedData.captor_id + ', value = ' + parsedData.value + ' are required fields.');
       
           this.pool.getConnection(async (err, connection) => {
             if (err) { console.log(err); return; };// not connected!
@@ -125,6 +124,9 @@ export class Controller{
               // SQL query using prepared statement
               let sql = this.insertStatement;
               let data = this.getInsertData(parsedData);
+
+              console.log('sql = ' + sql);
+              console.log('data = ' + data);
             
               let caca = await connection.execute(sql, data, (err, result) => {
                 if (err) console.log(err);

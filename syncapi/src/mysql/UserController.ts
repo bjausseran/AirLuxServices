@@ -6,10 +6,10 @@ export class UserController extends Controller
   constructor(){
     super();
     this.tableName = "users";
+    this.updateStatement = `UPDATE ${this.tableName} SET name = ?, email = ?, password = ? WHERE id = ?`;
+    this.insertStatement = `INSERT INTO ${this.tableName} (id, name, email, password) VALUES (?, ?, ?, ?)`;
   }
     
-  updateStatement: string = `UPDATE ${this.tableName} SET name = ?, email = ?, password = ? WHERE id = ?`;
-  insertStatement: string = `INSERT INTO ${this.tableName} (id, name, email, password) VALUES (?, ?, ?, ?)`;
     
   override checkUpdateData(parsedData: any) : boolean{
     return !parsedData.id || !parsedData.name || !parsedData.email || !parsedData.password;

@@ -21,7 +21,8 @@ class UsersScreenState extends State<UsersScreen> {
     CustomCard(
         icon: Icons.person,
         outlinedIcon: Icons.person_outline,
-        title: "Jonathan Philippe",
+        value: "",
+        title: "Aymeric Queret",
         subtitle: "Autres informations",
         pillTextOn: "Autorisé",
         pillTextOff: "Non autorisé",
@@ -30,7 +31,8 @@ class UsersScreenState extends State<UsersScreen> {
     CustomCard(
         icon: Icons.person,
         outlinedIcon: Icons.person_outline,
-        title: "Loup Bruneau",
+        value: "",
+        title: "Benoît Jausseran",
         subtitle: "Autres informations",
         pillTextOn: "Autorisé",
         pillTextOff: "Non autorisé",
@@ -39,7 +41,8 @@ class UsersScreenState extends State<UsersScreen> {
     CustomCard(
         icon: Icons.person,
         outlinedIcon: Icons.person_outline,
-        title: "Dang Nguyen",
+        value: "",
+        title: "Artus Pouillet",
         subtitle: "Autres informations",
         pillTextOn: "Autorisé",
         pillTextOff: "Non autorisé",

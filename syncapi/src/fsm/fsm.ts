@@ -9,7 +9,8 @@ import { CaptorValueController } from "../mysql/CaptorValueController";
 import { State, StateMachine } from "@edium/fsm";
 import { Controller } from "../mysql/Controller";
 import { WebSocket } from "ws";
-import { Socket } from "dgram";
+import { Box } from "../models/box";
+import { GlobalContext } from '../models/globalContext';
 
 
 class Context{
@@ -28,8 +29,12 @@ class Context{
     done: boolean;
 
     ws: WebSocket;
+    gc: GlobalContext;
+    building_id: string = "1";
+    captorid: any;
+    captorvalue: any;
 
-    constructor(actions: string[], ws: WebSocket) {
+    constructor(actions: string[], ws: WebSocket, gc: GlobalContext) {
         this.ws = ws;
         this.actions = actions;
         this.users = new UserController();
@@ -38,6 +43,7 @@ class Context{
         this.rooms = new RoomController();
         this.captors = new CaptorController();
         this.captorValues = new CaptorValueController();
+        this.gc = gc;
         this.done = false;
         this.wholeMessage = actions.join("//");
         console.log(`Controllers : constructor, users = ${this.users}, devices = ${this.devices}`);
@@ -57,8 +63,8 @@ export class FSM {
         //console.log(`FSM : constructor : context = ${this.context}`);
     };
 
-    setContext(message: string, ws: WebSocket){
-        this.context = new Context(message.split('//'), ws);
+    setContext(message: string, ws: WebSocket, gc: GlobalContext){
+        this.context = new Context(message.split('//'), ws, gc);
     }
 
 
@@ -97,6 +103,21 @@ export class FSM {
         }
     };
 
+    tryConnectBox ( state : State, context: Context ) {
+        
+        const currentMessage = context.actions.shift();
+        if(currentMessage)
+        {
+            if(context.gc.boxes == undefined) 
+                context.gc.boxes = [new Box(context.ws, currentMessage)]
+            else
+                context.gc.boxes.push(new Box(context.ws, currentMessage));
+
+            console.log(`tryConnectBox : New box registered, building id = ${currentMessage}`);
+            console.log(`tryConnectBox : nb boxes = ${context.gc.boxes.length}`);
+        }
+        state.trigger( "end" ); 
+    };
     tryConnectUser ( state : State, context: Context ) {
         let data = context.actions.shift();
         let credentials = data!.split("{#}");
@@ -124,10 +145,25 @@ export class FSM {
 
     sendToLocal ( state : State, context: Context ) {
         const currentMessage = context.actions[0];
-        console.log(`FSM : action = sendToLocal, context = {${context.toString()}}, message = ${currentMessage}`);
         if (context.currentController !== undefined)
         {
-            context.ws.send(context.wholeMessage!);
+            let mess = `tolocal//${context.currentController.tableName}//${context.captorid}//${context.captorvalue}`
+            console.log(`FSM : action = sendToLocal, wholeMessage = ${mess}, to box#${context.building_id}`);
+            console.log(`FSM : action = sendToLocal, nb boxes = ${context.gc.boxes?.length}`);
+            if(context.gc.boxes == undefined)
+            {
+                state.trigger( "end" ); 
+                return;
+            }
+            for (let index = 0; index < context.gc.boxes.length; index++) {
+                const element = context.gc.boxes[index];
+                console.log(`FSM : action = sendToLocal, iterate : box#${index} = ${element.building_id}`);
+                if(element.building_id == context.building_id)
+                {
+                    element.ws.send(mess);
+                    console.log(`FSM : action = sending to local, ws = ${!element.ws.isPaused}`);
+                }
+            }
         }
         
         state.trigger( "end" ); 
@@ -161,6 +197,20 @@ export class FSM {
             state.trigger( "get" );
         } else if ( currentMessage === "insert"  && context.currentController !== undefined && context.data !== undefined) {
             context.currentController.insert(context.data);
+            let parsedData = JSON.parse(context.data);
+
+            if(context.currentController instanceof CaptorValueController)
+            {
+                context.captorid = parsedData["captor_id"];
+                context.captorvalue = parsedData["value"];
+                context.buildings.getBuildingByCaptor(context.captorid).then(
+                    (result) => {
+                        let parsed = JSON.parse(result)[0]["building_id"];
+                        console.log(`FSM : action = statement, send action to building#${parsed}`);
+                        context.building_id = parsed; 
+                        //state.trigger( "send" );
+                    });
+            }
             state.trigger( "insert" );
         } else if ( currentMessage === "update" && context.currentController !== undefined && context.data !== undefined) {
             context.currentController.update(context.data);
@@ -198,16 +248,32 @@ export class FSM {
         
         console.log(`FSM, invokeGet : join =  ${join}, where = ${where}`);
 
-        context.currentController.select(where, join)
-        .then((jsonString: string) => {
-          // Use jsonString, which contains the JSON representation of the query result
-          console.log('Query result as JSON:', jsonString);
-          context.ws.send(jsonString);
-        })
-        .catch((error: any) => {
-          console.error('Error:', error);
-          context.ws.send('Error:', error);
-        })
+        if(context.currentController instanceof CaptorController)
+        {
+            context.captors.getCaptorWithLastData(where!)
+            .then((jsonString: string) => {
+              // Use jsonString, which contains the JSON representation of the query result
+              console.log('Query result as JSON:', jsonString);
+              context.ws.send(jsonString);
+            })
+            .catch((error: any) => {
+              console.error('Error:', error);
+              context.ws.send('Error:', error);
+            })
+        }
+        else{
+            context.currentController.select(where, join)
+            .then((jsonString: string) => {
+              // Use jsonString, which contains the JSON representation of the query result
+              console.log('Query result as JSON:', jsonString);
+              context.ws.send(jsonString);
+            })
+            .catch((error: any) => {
+              console.error('Error:', error);
+              context.ws.send('Error:', error);
+            })
+        }
+
 
         
         state.trigger( "end" );
@@ -232,6 +298,7 @@ export class FSM {
         
         const connectState = stateMachine.createState( "Connexion state", false, this.connectionAction, this.exitAction); // Trivial use of exit action as an example.
         const connectUserState = stateMachine.createState( "Connect user state", false, this.tryConnectUser, this.exitAction); // Trivial use of exit action as an example.
+        const connectBoxState = stateMachine.createState( "Connect box state", false, this.tryConnectBox, this.exitAction); // Trivial use of exit action as an example.
         
         const toLocalState = stateMachine.createState( "To local state", false, this.tableAction);
         const toCloudState = stateMachine.createState( "To cloud state", false, this.tableAction);
@@ -249,9 +316,11 @@ export class FSM {
         const endState = stateMachine.createState( "End state", false, this.finalAction);
 
         const getState = stateMachine.createState( "Get state", false, this.invokeGet);
-        const insertState = stateMachine.createState( "Insert state", false, this.finalAction);
+        const insertState = stateMachine.createState( "Insert state", false, this.sendToLocal);
         const updateState = stateMachine.createState( "Update state", false, this.finalAction);
         const deleteState = stateMachine.createState( "Delete state", false, this.finalAction);
+
+        const sendActionState = stateMachine.createState( "Send action state", false, this.finalAction); // Trivial use of exit action as an example.
         
         
         // TO LOCAL/CLOUD
@@ -259,18 +328,11 @@ export class FSM {
         directionState.addTransition( "tocloud", toCloudState );
         directionState.addTransition( "connect", connectState );
 
-        //FIND TABLE
-        // toLocalState.addTransition( "users", usersState );
-        // toLocalState.addTransition( "devices", devicesState );
-        // toLocalState.addTransition( "buildings", buildingsState );
-        // toLocalState.addTransition( "rooms", roomsState );
-        // toLocalState.addTransition( "captors", captorsState );
-        // toLocalState.addTransition( "captor_values", captorValuesState );
-
-        
         connectState.addTransition( "userConnection", connectUserState );
+        connectState.addTransition( "boxConnection", connectBoxState );
         // TO LOCAL/CLOUD
         connectUserState.addTransition( "end", endState );
+        connectBoxState.addTransition( "end", endState );
 
         toCloudState.addTransition( "users", usersState );
         toCloudState.addTransition( "devices", devicesState );
@@ -292,6 +354,9 @@ export class FSM {
         getState.addTransition( "end", endState);
 
         parseDataState.addTransition( "insert", insertState );
+        insertState.addTransition( "end", endState);
+        //sendActionState.addTransition( "end", endState);
+
         parseDataState.addTransition( "update", updateState );
         parseDataState.addTransition( "delete", deleteState );
         

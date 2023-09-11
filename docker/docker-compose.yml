@@ -29,7 +29,7 @@ services:
       context: ./..
       dockerfile: docker/dockerfile-localapp
     environment:
-      CLIENT_ID: 'Air_Lux_Test'
+      BUILDING_ID: '1'
     depends_on:
       - broker
       - syncapi
@@ -115,7 +115,7 @@ services:
       dockerfile: docker/dockerfile-actuator
     container_name: actuator
     environment:
-      ACTUATOR_ID: '0000003'
+      ACTUATOR_ID: '2'
     depends_on:
       dblocal:
         condition: service_healthy
