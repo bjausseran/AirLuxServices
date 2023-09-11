@@ -1,0 +1,13 @@
+version: "3.9"
+networks:
+  testfunc:
+    name: testfunc
+services:
+  tester:
+    container_name: "tester"
+    build:
+      context: "../../../../.."
+      dockerfile: "Dockerfile_local_app"
+      target: testfunc
+    networks:
+      - testfunc

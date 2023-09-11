@@ -1,0 +1,35 @@
+version: "3.9"
+networks:
+  testinteg:
+    name: testinteg
+services:
+  db_local:
+    container_name: db_local
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ../../../../../Local_service/Redis:/usr/local/etc/redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - testinteg
+      
+  cloud_app:
+    container_name: cloud_app
+    image: jausseran/cloud_api
+    ports:
+      - "80:80"
+      - "6001:6001"
+    extra_hosts:
+        host.docker.internal: host-gateway
+    networks:
+      - testinteg
+
+  broker:
+    container_name: broker
+    image: eclipse-mosquitto
+    ports:
+      - 1883:1883
+      - 9001:9001
+    networks:
+      - testinteg

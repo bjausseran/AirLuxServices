@@ -1,0 +1,49 @@
+name: Cloud app - dev tests
+
+on:
+  push:
+    paths:
+      - 'Local_service/Local_app/**'
+      - 'Cloud_service/**'
+    branches:
+      - 'feat/**'
+      - 'hotfix/**'
+
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      working-directory: Cloud_service/cloud_app
+      run: npm ci
+
+    - name: Lint with ESLint
+      working-directory: Cloud_service/cloud_app
+      run: npm run lint
+
+      # Fail the workflow if ESLint errors are found
+      if: ${{ failure() || success() }}
+
+
+  integ-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set necessary container up
+        run: docker-compose -f "Cloud_service/cloud_app/tests/integ/dependencies/docker-compose.yaml" up -d --build
+      - name: Set tester container up
+        run: docker-compose -f "Cloud_service/cloud_app/tests/integ/dependencies/tester-compose.yaml" up --exit-code-from tester --build
+  
+  func-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set necessary container up
+        run: docker-compose -f "Cloud_service/cloud_app/tests/functionnal/dependencies/docker-compose.yaml" up -d --build
+      - name: Set tester container up
+        run: docker-compose -f "Cloud_service/cloud_app/tests/functionnal/dependencies/tester-compose.yaml" up --exit-code-from tester --build

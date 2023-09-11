@@ -1,0 +1,18 @@
+version: "3.9"
+networks:
+  testfunc:
+    name: testfunc
+services:
+  tester:
+    container_name: "tester"
+    build:
+      context: "../../../../.."
+      dockerfile: "Dockerfile_cloud_app"
+      target: testfunc
+    ports:
+      - "80:80"
+      - "6001:6001"
+    extra_hosts:
+        host.docker.internal: host-gateway
+    networks:
+      - testfunc

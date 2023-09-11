@@ -1,67 +1,46 @@
-# Documentation
-View documentation and all information in notion : https://hallowed-timimus-dfc.notion.site/Airlux-30a742c5c98c49b1b371ed8b0b422972
- 
- Demo ready
+# AirLux_Services
+ Services utilisés pour le projet AirLux.
 
-# SET UP :
+# Redis :
+
+Generate ca.key :
+
 ```
-# clone repo (uwu)
-cd docker
-docker compose build
-
-#__________________MOSQUITTO____________________
-# START MOSQUITTO BROKER :
-docker exec -ti broker mosquitto -c /mosquitto/config/mosquitto.conf
-#_______________________________________________
-
-#____________PROMETHEUS / GRAFANA_______________
-# TO OPEN GRAFANA
-# go to localhost:3000
-#   -   user = admin
-#   -   pass = secret
-
-# TO ADD A DATA SOURCE
-# go to configuration - data sources
-# clic Add data source, select Prometheus
-#   -   url = http://host.docker.internal:9090
-#   -   Prometheus type = Prometheus
-#   -   Prometheus version = 2.40.x (or check at localhost:9090)
-
-# TO ADD A DASHBOARD :
-# Select dashboard - import
-# choose a Json from grafana folder or find an ID on grafana.com
-#______________________________________________
-#
+openssl genrsa -out ca.key 2048 
+openssl req -new -x509 -days 3650 -key ca.key -out ca.crt
 ```
 
-# Assignment
-- Dang/Aymeric - websocket/localapp
-- Jonathan/Loup - MCD
-- Benoît - Laravel
-- Artus - sick
+Generate cert & key :
+```
+openssl req   -nodes  -newkey rsa:2048  -keyout client_key_app_001.pem  -x509  -days 36500  -out client_cert_app_001.pem
+```
 
-# Integration checklist
-- [x] pulsor (nodejs) : need to push to mosquitto and not redis
-- [x] broker (mosquitto)
-- [x] localapp (nodejs)
-- [x] dblocal (redis)
-- [x] syncapi (laravel) : remove direct connection to redis since websocket connect trought socket
-- [x] dbcloud (mysql)
-- [ ] validator (nodejs)
-- [x] dbstats (prometheus)
-- [x] statsapp (grafana)
-- [ ] phoneapp (flutter)
+# Local_app
 
-# TODO (management)
-- [x] Confirm services name and rename folders, dockerfiles, services (compose)
-- [x] Set up a post merging process (with tech lead (maybe PO ?))
-- [ ] Create MCD
 
-# TODO Services
-## statsapp-Grafana
-- [ ] Create graphs
-## dbstats-Prometheus
-- [ ] Check data polling from mysql
-## syncapi-Laravel
-- [ ] Remove redis connection (useless)
-- [ ] Add CRUD related to new MCD
+Test unitaire :
+```
+npm --prefix Local_service/Local_app/ run test
+```
+Test integration (local) :
+```
+docker-compose -f Local_service/Local_app/tests/integ/dependencies/docker-compose.yaml build
+docker-compose -f Local_service/Local_app/tests/integ/dependencies/docker-compose.yaml up -d
+```
+        
+Test fonctionnel (local) :
+```
+docker-compose -f Local_service/Local_app/tests/functionnal/dependencies/docker-compose.yaml build
+docker-compose -f Local_service/Local_app/tests/functionnal/dependencies/docker-compose.yaml up -d
+```
+
+
+
+Notes :
+
+
+        MutualTLS
+        github workflow
+        sonar qube
+
+        note ?

@@ -1,0 +1,22 @@
+FROM node:18
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY Local_service/Actuator/package*.json ./
+
+RUN apt-get update -qq && apt-get install -y gcc make build-essential
+RUN mkdir -p /home/Actuator
+WORKDIR /home/Actuator/
+
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --only=production
+
+# Bundle app source
+COPY Local_service/Actuator/. .
+
+EXPOSE 7071
+
+CMD ["node", "index.js"];
+VOLUME /project/logs
