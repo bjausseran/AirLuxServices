@@ -1,0 +1,25 @@
+# Local Services
+
+FROM node:18-alpine as installer
+WORKDIR /usr/app
+COPY /Local_service/Local_app/package.json ./
+COPY /Local_service/Local_app/package-lock.json ./
+RUN npm ci --omit=dev
+RUN npm update
+
+COPY /Local_service/Local_app/src ./src
+CMD [ "node", "src/index.js" ]
+# ----------
+
+## Testinteg: get only test integ files and, node modules from installer (with dev dep) and package.json and run the test integ command
+FROM node:18-alpine as testinteg
+
+WORKDIR /usr/app
+COPY --from=installer /usr/app/node_modules /usr/app/node_modules
+COPY --from=installer /usr/app/package.json /usr/app/package.json
+COPY ./Local_service/Local_app/src/ /usr/app/src
+COPY ./Local_service/Local_app/tests/integ /usr/app/tests/integ
+#COPY ./tsconfig.json /app/tsconfig.json
+#COPY ./jest.config.js /app/jest.config.js
+
+CMD [ "node", "src/index.js" ]

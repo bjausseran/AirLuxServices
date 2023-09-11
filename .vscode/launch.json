@@ -9,13 +9,13 @@
             "port": 9222,
             "request": "attach",
             "type": "chrome",
-            "webRoot": "${workspaceFolder}/mobileapp"
+            "webRoot": "${workspaceFolder}/Mobile_App"
         },
         {
             "name": "airlux",
             "request": "launch",
             "type": "dart",
-            "program": "mobileapp/lib/main.dart",
+            "program": "Mobile_App/lib/main.dart",
         },
         {
             "name": "airlux (profile mode)",

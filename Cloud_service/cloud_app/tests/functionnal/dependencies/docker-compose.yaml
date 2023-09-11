@@ -1,0 +1,26 @@
+version: "3.9"
+networks:
+  testfunc:
+    name: testfunc
+services:
+  local_app:
+    container_name: local_app
+    image: jausseran/local_app
+    networks:
+      - testfunc
+
+  db_cloud:
+    container_name: db_cloud
+    image: mysql:5.7
+    volumes:
+      - ./Cloud_service/db_cloud/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./Cloud_service/db_cloud:/etc/mysql/conf.d
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=AirLuxDB
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_CHARSET=utf8mb4
+      - MYSQL_COLLATION=utf8mb4_general_ci
+    networks:
+      - testfunc

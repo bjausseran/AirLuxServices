@@ -1,0 +1,67 @@
+version: "3.9"
+networks:
+  testinteg:
+    name: testinteg
+services:
+
+  db_cloud:
+    container_name: db_cloud
+    image: mysql:5.7
+    volumes:
+      - ./Cloud_service/db_cloud/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./Cloud_service/db_cloud:/etc/mysql/conf.d
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=AirLuxDB
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_CHARSET=utf8mb4
+      - MYSQL_COLLATION=utf8mb4_general_ci
+    networks:
+      - testinteg
+
+  local_app:
+    container_name: local_app
+    image: jausseran/local_app
+    networks:
+      - testinteg
+
+  db_stats:
+    container_name: db_stat
+    image: bitnami/prometheus
+    volumes:
+      - ./Cloud_service/Prometheus:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    networks:
+      - testinteg
+      
+  stats_app:
+    container_name: stats_app
+    image: grafana/grafana:latest
+    environment:
+      - GRAFANA_MYSQL_PASSWORD=password
+      - GF_SECURITY_ADMIN_PASSWORD=secret
+      - GF_ALERTING_EXECUTE_ALERTS=false
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+    volumes:
+      - ./../Grafana/datasources/:/usr/share/grafana/conf/provisioning/datasources/
+    ports:
+      - 3000:3000
+    networks:
+      - testinteg
+      
+  mysqld-exporter:
+    container_name: mysqld-exporter
+    image: quay.io/prometheus/mysqld-exporter
+    command:
+     - --collect.info_schema.tablestats
+    environment:
+      - DATA_SOURCE_NAME=root:password@(db_cloud:3306)/
+    ports:
+      - 9104:9104
+    networks:
+      - testinteg

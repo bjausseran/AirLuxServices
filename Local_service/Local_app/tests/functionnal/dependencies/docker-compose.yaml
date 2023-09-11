@@ -1,0 +1,26 @@
+version: "3.9"
+networks:
+  testfunc:
+    name: testfunc
+services:
+  db_local:
+    container_name: db_local
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ../../../../../Local_service/Redis:/usr/local/etc/redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - testfunc
+
+  cloud_app:
+    container_name: cloud_app
+    image: jausseran/cloud_api
+    ports:
+      - "80:80"
+      - "6001:6001"
+    extra_hosts:
+        host.docker.internal: host-gateway
+    networks:
+      - testfunc
