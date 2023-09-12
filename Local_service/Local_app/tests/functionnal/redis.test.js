@@ -8,6 +8,11 @@ describe("Testing redis.PostCaptorData", () => {
   let result = false;
   let data = ['0001', '23'];
 
+  afterAll(() => {
+    redisCli.redis_disconnection()
+  })
+  
+
   describe("Normal creation", () => {
     test("Data should be valid", () => {
       result = redisCli.postCaptorValue(data[0], data[1]);
