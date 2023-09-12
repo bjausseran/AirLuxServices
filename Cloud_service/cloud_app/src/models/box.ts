@@ -1,3 +1,5 @@
+import { WebSocket } from "ws";
+
 export class Box{
     constructor(ws: WebSocket, building_id: string){
         //this.id = id;
