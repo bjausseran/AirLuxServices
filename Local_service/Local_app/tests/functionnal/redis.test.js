@@ -3,6 +3,7 @@
 'use strict';
 // NOTE - Require
 const redis = require('redis');
+const redisCli = require('../../src/redis/redis_client');
 
 // NOTE - REDIS
 const client = redis.createClient({
@@ -61,16 +62,14 @@ describe("Connect to Redis database", () => {
       expect(isReady).toBe(true);
     })
   })
-})
-
-
+  
 describe("Testing redis.PostCaptorData", () => {
   let result = false;
   let data = ['0001', '23'];
 
   describe("Normal creation", () => {
     beforeAll(() => {
-      result = redis.postCaptorValue(data[0], data[1]);
+      result = redisCli.postCaptorValue(data[0], data[1]);
     })
     test("Data should be valid", () => {
       expect(result).toBe(true);
@@ -80,7 +79,7 @@ describe("Testing redis.PostCaptorData", () => {
   describe("no ID creation", () => {
     beforeAll(() => {
       data = ['', '23'];
-      result = redis.postCaptorValue(data[0], data[1]);
+      result = redisCli.postCaptorValue(data[0], data[1]);
     })
     test("Data shouldn't be valid", () => {
       expect(result).toBe(false);
@@ -90,7 +89,7 @@ describe("Testing redis.PostCaptorData", () => {
   describe("no value creation", () => {
     beforeAll(() => {
       data = ['001', ''];
-      result = redis.postCaptorValue(data[0], data[1]);
+      result = redisCli.postCaptorValue(data[0], data[1]);
     })
     test("Data shouldn't be valid", () => {
       expect(result).toBe(false);
@@ -100,7 +99,7 @@ describe("Testing redis.PostCaptorData", () => {
   describe("ID is a integer creation", () => {
     beforeAll(() => {
       data = [1, '23'];
-      result = redis.postCaptorValue(data[0], data[1]);
+      result = redisCli.postCaptorValue(data[0], data[1]);
     })
     test("Data should be valid", () => {
       expect(result).toBe(true);
@@ -118,3 +117,5 @@ describe("Testing redis.PostCaptorData", () => {
     })
   })
 })
+})
+
