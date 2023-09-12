@@ -7,7 +7,13 @@ const redis = require('redis');
 // NOTE - REDIS
 const client = redis.createClient({
   url: 'redis://db_local',
-  port: 6379
+  port: 6379,
+  socket: {
+    reconnectStrategy() {
+        console.log('reconnectStrategy', new Date().toJSON());
+        return process.env.JEST_WORKER_ID ? 2147483647 : 5000;
+    }
+}
 });
 
 async function redis_connection() {
