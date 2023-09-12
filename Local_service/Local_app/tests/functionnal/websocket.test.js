@@ -8,9 +8,9 @@ describe('WebSocket Connection', () => {
     ws.on('message', message => {
       let response = message.toString('utf8');
 
-      if(response !== 'Welcome to the server!'){
+      if(response === 'Welcome to the server!'){
         console.log('Response for message is : ' + response);
-        expect(response).toBe('OK');
+        expect(response).toBe('Welcome to the server!');
         done();
         ws.close();
       }

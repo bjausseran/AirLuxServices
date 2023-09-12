@@ -22,6 +22,7 @@ const gc = new GlobalContext()
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
+    ws.send('Welcome to the server!');
 
     ws.on('message', (message) => {
         console.log(`Received message: ${message}`);
