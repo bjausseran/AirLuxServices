@@ -22,6 +22,12 @@ async function redis_connection() {
     console.log("Redis database connected!")
   })
 }
+function redis_disconnection() {
+  client.disconnect(function(err) {
+    if(err) throw err;
+    console.log("Redis database disconnected!")
+  })
+}
 // --------------------
 
 // NOTE - Redis connection
@@ -40,6 +46,7 @@ async function postData(data){
     await client.set(time, data);
 }
 module.exports = {
+ redis_disconnection,
  postCaptorValue: function (captorid, value)
     {
         let data = {
