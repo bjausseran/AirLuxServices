@@ -3,9 +3,11 @@ const ws = require("./websocket/websocket");
 const mqttSub = require("./mqtt/sub");
 const mqttPub = require("./mqtt/pub");
 
-
+function parseData(message){
+    return message.split("//");
+}
 function parseFromCloud(message){
-    let parsed = message.split("//");
+    let parsed = parseData(message);
     if(parsed[0] == "tolocal") 
     {
         let table =  parsed[1];

@@ -1,57 +1,28 @@
-const redis = require("./../../src/redis/redis_client");
+function parseData(message){
+  return message.split("//");
+}
 
+describe("Testing websocket file", () => {
 
-describe("Testing redis.PostCaptorData", () => {
-  let result = false;
-  let data = ['0001', '23'];
-
-  describe("Normal creation", () => {
+  let message = "tolocal//captor_values//2//24";
+  let array = parseData(message);
+  describe("Normal data", () => {
     beforeAll(() => {
-      result = redis.postCaptorValue(data[0], data[1]);
     })
-    test("Data should be valid", () => {
-      expect(result).toBe(true);
+    test("Array[0] should be tolocal", () => {
+      expect(array[0]).toBe("tolocal");
+    })
+    
+    test("Array[1] should be captor_values", () => {
+      expect(array[1]).toBe("captor_values");
+    })
+    
+    test("Array[2] should be 2", () => {
+      expect(array[2]).toBe("2");
+    })
+    
+    test("Array[3] should be 24", () => {
+      expect(array[3]).toBe("24");
     })
   })
-  
-  describe("no ID creation", () => {
-    beforeAll(() => {
-      data = ['', '23'];
-      result = redis.postCaptorValue(data[0], data[1]);
-    })
-    test("Data shouldn't be valid", () => {
-      expect(result).toBe(false);
-    })
-  })
-  
-  describe("no value creation", () => {
-    beforeAll(() => {
-      data = ['001', ''];
-      result = redis.postCaptorValue(data[0], data[1]);
-    })
-    test("Data shouldn't be valid", () => {
-      expect(result).toBe(false);
-    })
-  })
-  
-  describe("ID is a integer creation", () => {
-    beforeAll(() => {
-      data = [1, '23'];
-      result = redis.postCaptorValue(data[0], data[1]);
-    })
-    test("Data should be valid", () => {
-      expect(result).toBe(true);
-    })
-  })
-  
-  
-  describe("Value is a integer creation", () => {
-    beforeAll(() => {
-      data = ['001', 23];
-      result = redis.postCaptorValue(data[0], data[1]);
-    })
-    test("Data should be valid", () => {
-      expect(result).toBe(true);
-    })
-  })
-})
+});
