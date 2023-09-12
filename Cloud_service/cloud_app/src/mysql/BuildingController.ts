@@ -23,7 +23,7 @@ export class BuildingController extends Controller
           // Use the connection
           try {
             // SQL query
-            let sql = `SELECT rooms.building_id FROM captors LEFT JOIN rooms ON captors.room_id = rooms.id WHERE captors.id = ${captorid} GROUP BY rooms.building_id `;
+            const sql = `SELECT rooms.building_id FROM captors LEFT JOIN rooms ON captors.room_id = rooms.id WHERE captors.id = ${captorid} GROUP BY rooms.building_id `;
             
             console.log('BuildingController, select : sql = ' + sql);
             
@@ -68,7 +68,7 @@ export class BuildingController extends Controller
           reject(err); // Reject the promise with the error if connection fails
           return;
         }if (!userid) {
-          let err = ('Invalid input. id is a required field.');
+          const err = ('Invalid input. id is a required field.');
           reject(err);
           return;
         }
@@ -76,8 +76,8 @@ export class BuildingController extends Controller
         // Use the connection
         try {
           // SQL query using prepared statement
-          let sql = 'SELECT buildings.id, buildings.name FROM buildings LEFT JOIN user_building ON buildings.id = user_building.building_id WHERE user_id = ?';
-          let data = [userid];
+          const sql = 'SELECT buildings.id, buildings.name FROM buildings LEFT JOIN user_building ON buildings.id = user_building.building_id WHERE user_id = ?';
+          const data = [userid];
 
           connection.execute(sql, data, function(err, result) {
             if (err) {
@@ -102,7 +102,7 @@ export class BuildingController extends Controller
 
   // Function to insert data into the buildings table
   override async insert(json: string) {
-    let parsedData = JSON.parse(json);
+    const parsedData = JSON.parse(json);
     // Check for invalid input
     if (this.checkInsertData(parsedData)) {
       console.error('Invalid input. id, name, type and user_id are required fields.');
@@ -110,20 +110,20 @@ export class BuildingController extends Controller
     }
     this.pool.getConnection(function(err, connection) {
       
-      if (err) { console.log(err); return; };// not connected!
+      if (err) { console.log(err); return; }// not connected!
       // Use the connection
     // SQL query using prepared statement
-    let sqlPivot = 'INSERT INTO user_building (building_id, user_id) VALUES (?, ?)';
-    let pivotData = [parsedData.id, parsedData.user_id];
+    const sqlPivot = 'INSERT INTO user_building (building_id, user_id) VALUES (?, ?)';
+    const pivotData = [parsedData.id, parsedData.user_id];
   
     connection.execute(sqlPivot, pivotData, function(err, result) {
       if (err) console.log(err);
-      else console.log('user_building pivot added successfully');
+      else console.log('user_building pivot added successfully, result = ' + result);
     });
   
     // SQL query using prepared statement
-    let sql = 'INSERT INTO buildings (id, name, type) VALUES (?, ?, ?)';
-    let data = [parsedData.id, parsedData.name, parsedData.type];
+    const sql = 'INSERT INTO buildings (id, name, type) VALUES (?, ?, ?)';
+    const data = [parsedData.id, parsedData.name, parsedData.type];
   
     connection.execute(sql, data, function(err, result) {
       if (err) console.log(err);

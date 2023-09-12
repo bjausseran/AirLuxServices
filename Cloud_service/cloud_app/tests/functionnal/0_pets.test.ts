@@ -9,12 +9,12 @@ describe("Functionnal testing for Pets", () => {
       let response: any
       let duration: number
       test("Is should return an error", async () => {
-        let start = new Date().getTime()
+        const start = new Date().getTime()
         response = await request(apiUrl)
           .post('/pets')
           .send({ kind: "dog" })
           .expect(400)
-        let end = new Date().getTime()
+          const end = new Date().getTime()
         duration = end - start
       })
       test("It should specify that keys are missing", () => {
@@ -27,14 +27,14 @@ describe("Functionnal testing for Pets", () => {
     describe("Valid payload", () => {
       let response: any
       let duration: number
-      let pasteque = { name: "Pastèque", kind: "dog", vetId: 1, birthDate: "2020-08-07T10:00:00.000Z" }
+      const pasteque = { name: "Pastèque", kind: "dog", vetId: 1, birthDate: "2020-08-07T10:00:00.000Z" }
       test("Is should return 201", async () => {
-        let start = new Date().getTime()
+        const start = new Date().getTime()
         response = await request(apiUrl)
           .post('/pets')
           .send(pasteque)
           .expect(201)
-        let end = new Date().getTime()
+          const end = new Date().getTime()
         duration = end - start
       })
       test("It should specify that keys are missing", () => {

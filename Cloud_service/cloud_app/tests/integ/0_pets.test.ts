@@ -33,9 +33,9 @@ describe("Testing Pet Mongo", () => {
     let inserted: Pet
     let duration: number
     beforeAll(async () => {
-      let start = new Date().getTime()
+      const start = new Date().getTime()
       inserted = await PetStorage.add(cat)
-      let end = new Date().getTime()
+      const end = new Date().getTime()
 
       duration = end - start
 
