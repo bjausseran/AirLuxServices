@@ -9,51 +9,41 @@ describe("Testing redis.PostCaptorData", () => {
   let data = ['0001', '23'];
 
   describe("Normal creation", () => {
-    beforeAll(() => {
-      result = redisCli.postCaptorValue(data[0], data[1]);
-    })
     test("Data should be valid", () => {
+      result = redisCli.postCaptorValue(data[0], data[1]);
       expect(result).toBe(true);
     })
   })
   
   describe("no ID creation", () => {
-    beforeAll(() => {
+    test("Data shouldn't be valid", () => {
       data = ['', '23'];
       result = redisCli.postCaptorValue(data[0], data[1]);
-    })
-    test("Data shouldn't be valid", () => {
       expect(result).toBe(false);
     })
   })
   
   describe("no value creation", () => {
-    beforeAll(() => {
+    test("Data shouldn't be valid", () => {
       data = ['001', ''];
       result = redisCli.postCaptorValue(data[0], data[1]);
-    })
-    test("Data shouldn't be valid", () => {
       expect(result).toBe(false);
     })
   })
   
   describe("ID is a integer creation", () => {
-    beforeAll(() => {
+    test("Data should be valid", () => {
       data = [1, '23'];
       result = redisCli.postCaptorValue(data[0], data[1]);
-    })
-    test("Data should be valid", () => {
       expect(result).toBe(true);
     })
   })
   
   
   describe("Value is a integer creation", () => {
-    beforeAll(() => {
+    test("Data should be valid", () => {
       data = ['001', 23];
       result = redis.postCaptorValue(data[0], data[1]);
-    })
-    test("Data should be valid", () => {
       expect(result).toBe(true);
     })
   })
