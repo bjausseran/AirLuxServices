@@ -21,7 +21,7 @@ function parseFromCloud(message){
   }
 
   ws.client.addEventListener("open", (event) => {
-    console.log(`Client connected to websocket port 6001`);
+    console.log(`Client connected to websocket port 6001, event = ${event}`);
     console.log(`Register box #${process.env.BUILDING_ID}`);
     ws.client.send(`connect//box//${process.env.BUILDING_ID}`);
   });
