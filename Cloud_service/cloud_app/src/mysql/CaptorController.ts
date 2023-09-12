@@ -43,7 +43,7 @@ export class CaptorController extends Controller
       // Use the connection
       try {
         // SQL query
-        let sql = `SELECT u.id, u.name, u.type, u.room_id, h.value
+        const sql = `SELECT u.id, u.name, u.type, u.room_id, h.value
         FROM (
             SELECT u.*, MAX(h.id) as hid
             FROM captors u

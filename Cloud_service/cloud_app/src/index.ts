@@ -1,7 +1,5 @@
 import { RawData, WebSocket } from "ws";
 import { FSM } from "./fsm/fsm";
-import { isStringObject } from "util/types";
-import { Box } from "./models/box";
 import { GlobalContext } from "./models/globalContext";
 
 
@@ -18,8 +16,8 @@ const wss = new WebSocket.Server({ port: 6001 });
 
 console.log('wss status = ' +  wss);
 
-var fsm = new FSM()
-var gc = new GlobalContext()
+const fsm = new FSM()
+const gc = new GlobalContext()
 
 
 wss.on('connection', (ws) => {

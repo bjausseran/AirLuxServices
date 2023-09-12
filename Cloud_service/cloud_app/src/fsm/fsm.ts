@@ -30,9 +30,9 @@ class Context{
 
     ws: WebSocket;
     gc: GlobalContext;
-    building_id: string = "1";
-    captorid: any;
-    captorvalue: any;
+    building_id = "1";
+    captorid = "";
+    captorvalue= "";
 
     constructor(actions: string[], ws: WebSocket, gc: GlobalContext) {
         this.ws = ws;
@@ -47,7 +47,7 @@ class Context{
         this.done = false;
         this.wholeMessage = actions.join("//");
         console.log(`Controllers : constructor, users = ${this.users}, devices = ${this.devices}`);
-    };
+    }
 
     toString(): string{
         return this.actions.join(" ");
@@ -61,7 +61,7 @@ export class FSM {
     constructor() {
         //this.context = new Context(message.split('//'));
         //console.log(`FSM : constructor : context = ${this.context}`);
-    };
+    }
 
     setContext(message: string, ws: WebSocket, gc: GlobalContext){
         this.context = new Context(message.split('//'), ws, gc);
@@ -70,7 +70,7 @@ export class FSM {
 
     exitAction = ( state : State, context: string[] ) => {
         // Returning false will cancel the state transition
-        //console.log("FSM : exit action");
+        console.log(`FSM : exit action, state = ${state}}, context ${context}`);
         return true;
     };
       
@@ -84,7 +84,7 @@ export class FSM {
         } else if ( currentMessage === "connect" ) {
             state.trigger( "connect" );
         }
-    };
+    }
 
     connectionAction ( state : State, context: Context ) {
         const currentMessage = context.actions.shift();
@@ -101,7 +101,7 @@ export class FSM {
                 break;
             default: break;
         }
-    };
+    }
 
     tryConnectBox ( state : State, context: Context ) {
         
@@ -117,13 +117,13 @@ export class FSM {
             console.log(`tryConnectBox : nb boxes = ${context.gc.boxes.length}`);
         }
         state.trigger( "end" ); 
-    };
+    }
     tryConnectUser ( state : State, context: Context ) {
-        let data = context.actions.shift();
-        let credentials = data!.split("{#}");
+        const data = context.actions.shift();
+        const credentials = data!.split("{#}");
         
-        let email = credentials.shift();
-        let password = credentials.shift();
+        const email = credentials.shift();
+        const password = credentials.shift();
 
         if(email == null || password == null) return;
 
@@ -141,13 +141,13 @@ export class FSM {
                 console.error(`UError trying to connect, err: ? ${error}`);
               })
 
-    };
+    }
 
     sendToLocal ( state : State, context: Context ) {
-        const currentMessage = context.actions[0];
+        //const currentMessage = context.actions[0];
         if (context.currentController !== undefined)
         {
-            let mess = `tolocal//${context.currentController.tableName}//${context.captorid}//${context.captorvalue}`
+            const mess = `tolocal//${context.currentController.tableName}//${context.captorid}//${context.captorvalue}`
             console.log(`FSM : action = sendToLocal, wholeMessage = ${mess}, to box#${context.building_id}`);
             console.log(`FSM : action = sendToLocal, nb boxes = ${context.gc.boxes?.length}`);
             if(context.gc.boxes == undefined)
@@ -167,7 +167,7 @@ export class FSM {
         }
         
         state.trigger( "end" ); 
-    };
+    }
 
     tableAction ( state : State, context: Context ) {
         const currentMessage = context.actions.shift();
@@ -181,14 +181,14 @@ export class FSM {
             case "captor_values": context.currentController = context.captorValues;  state.trigger( "captor_values" ); break;
             default: break;
         }
-    };
+    }
     
     parseDataAction ( state : State, context: Context ) {
         context.data = context.actions.shift();
         console.log(`FSM : action = parse, context = {${context.toString()}}, data = ${context.data}`);
         //if(data is ok)
         state.trigger( "parse" );
-    };
+    }
     
     statementAction ( state : State, context: Context ) {
         const currentMessage = context.actions.shift();
@@ -197,7 +197,7 @@ export class FSM {
             state.trigger( "get" );
         } else if ( currentMessage === "insert"  && context.currentController !== undefined && context.data !== undefined) {
             context.currentController.insert(context.data);
-            let parsedData = JSON.parse(context.data);
+            const parsedData = JSON.parse(context.data);
 
             if(context.currentController instanceof CaptorValueController)
             {
@@ -205,7 +205,7 @@ export class FSM {
                 context.captorvalue = parsedData["value"];
                 context.buildings.getBuildingByCaptor(context.captorid).then(
                     (result) => {
-                        let parsed = JSON.parse(result)[0]["building_id"];
+                        const parsed = JSON.parse(result)[0]["building_id"];
                         console.log(`FSM : action = statement, send action to building#${parsed}`);
                         context.building_id = parsed; 
                         //state.trigger( "send" );
@@ -219,15 +219,15 @@ export class FSM {
             context.currentController?.remove(context.data);
             state.trigger( "delete" );
         }
-    };
+    }
 
     invokeGet(state: State, context: Context)
     {
         if(context.currentController === undefined) return;
 
-        let currentMessage = context.actions.shift();
+        //let currentMessage = context.actions.shift();
 
-        let data = context.data?.split("{#}");
+        const data = context.data?.split("{#}");
         let nextData = data?.shift();
         let where: string | undefined;
         let join: string | undefined;
@@ -256,7 +256,7 @@ export class FSM {
               console.log('Query result as JSON:', jsonString);
               context.ws.send(jsonString);
             })
-            .catch((error: any) => {
+            .catch((error) => {
               console.error('Error:', error);
               context.ws.send('Error:', error);
             })
@@ -277,18 +277,18 @@ export class FSM {
 
         
         state.trigger( "end" );
-    };
+    }
     
         
     finalAction ( state : State, context: Context  ) {
         // Can perform some final actions, the state machine is finished running.
         //perform mysql request and/or send message to local
-        console.log(`FSM : final action`);
+        console.log(`FSM : final action, state = ${state}}, context ${context}`);
         context.done = true;
         context.currentController = undefined;
         context.data = undefined;
         
-    };
+    }
       
     startFsm() : boolean {
         console.log(`FSM : startFsm : context = ${this.context}`);
@@ -319,9 +319,6 @@ export class FSM {
         const insertState = stateMachine.createState( "Insert state", false, this.sendToLocal);
         const updateState = stateMachine.createState( "Update state", false, this.finalAction);
         const deleteState = stateMachine.createState( "Delete state", false, this.finalAction);
-
-        const sendActionState = stateMachine.createState( "Send action state", false, this.finalAction); // Trivial use of exit action as an example.
-        
         
         // TO LOCAL/CLOUD
         directionState.addTransition( "tolocal", toLocalState );
