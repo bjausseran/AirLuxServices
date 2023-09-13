@@ -7,31 +7,24 @@ const redis = require('redis');
 // NOTE - REDIS
 const client = redis.createClient({
   url: 'redis://db_local',
-  port: 6379,
-  socket: {
-    reconnectStrategy() {
-        console.log('reconnectStrategy', new Date().toJSON());
-        return process.env.JEST_WORKER_ID ? 2147483647 : 5000;
-    }
-}
+  port: 6379
 });
-
-async function redis_connection() {
+function connection() {
   client.connect(function(err) {
     if(err) throw err;
     console.log("Redis database connected!")
   })
 }
-function redis_disconnection() {
+function disconnection() {
   client.disconnect(function(err) {
     if(err) throw err;
-    console.log("Redis database disconnected!")
+    console.log("Redis database connected!")
   })
 }
 // --------------------
 
 // NOTE - Redis connection
-redis_connection();
+connection();
 
 
 function getTimestamp() {
@@ -45,9 +38,36 @@ async function postData(data){
 
     await client.set(time, data);
 }
+
+function postCaptorValue(captorid, value){
+  let data = {
+      'captor_id' : captorid,
+      'client_id' : process.env.CLIENT_ID,
+      'value': value
+  };
+  // Send to redis DB
+  let data_send = JSON.stringify(data);
+
+  // Filter data in redis DB
+  let json = JSON.parse(data_send);
+  if(json.value && json.captor_id && json.client_id) {
+      console.log("value type is OK");
+      postData(data_send);
+  } else {
+      console.log("ERROR value type in database");
+  }
+  
+
+}
+
+// module.exports.connection = connection;
+// module.exports.disconnection = disconnection;
+// module.exports.postCaptorValue = postCaptorValue;
+
 module.exports = {
- redis_disconnection,
- postCaptorValue: function (captorid, value)
+  connection: connection,
+  disconnection: disconnection,
+  postCaptorValue: function (captorid, value)
     {
         let data = {
             'captor_id' : captorid,
@@ -69,15 +89,3 @@ module.exports = {
         
     }
 }
-
-function sum(a, b) {
-  return a + b;
-}
-
-function min(a, b) {
-  return a - b;
-}
-module.exports = {
-  sum,
-  min
-};
