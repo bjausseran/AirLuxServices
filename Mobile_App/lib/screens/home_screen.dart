@@ -12,6 +12,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:airlux/widgets/custom_card.dart';
 import 'globals/models/captor.dart';
 import 'globals/user_context.dart' as user_context;
+import 'settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final WebSocketChannel webSocketChannel =
@@ -196,84 +197,102 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          // title: const Text('Accueil'),
-          title: _buildings.isNotEmpty
-              ? DropdownButton<String>(
-                  value:
-                      _selectedBuilding == null ? "" : _selectedBuilding!.name,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      if (_selectedBuilding == null) return;
-                      for (int i = 0; i < _buildings.length; i++) {
-                        if (_buildings[i].name == newValue) {
-                          _selectedBuilding = _buildings[i];
-                        }
+        title: _buildings.isNotEmpty
+            ? DropdownButton<String>(
+                value: _selectedBuilding == null ? "" : _selectedBuilding!.name,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    if (_selectedBuilding == null) return;
+                    for (int i = 0; i < _buildings.length; i++) {
+                      if (_buildings[i].name == newValue) {
+                        _selectedBuilding = _buildings[i];
                       }
-                    });
-                  },
-                  underline: Container(),
-                  items: _buildings
-                      .map<DropdownMenuItem<String>>((Building value) {
-                    return DropdownMenuItem<String>(
-                      value: value.name,
-                      child: Text(value.name),
-                    );
-                  }).toList(),
-                  style: Theme.of(context).textTheme.titleLarge,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                )
-              : CircularProgressIndicator(), // Display a loading indicator,
-          centerTitle: false,
-          automaticallyImplyLeading: false,
-          actions: <Widget>[
-            PopupMenuButton(
-                icon: const Icon(Icons.add_box_outlined),
-                itemBuilder: (context) {
-                  return [
-                    const PopupMenuItem<int>(
-                      value: 0,
-                      child: Text("Appareils"),
-                    ),
-                    const PopupMenuItem<int>(
-                      value: 1,
-                      child: Text("Lieux"),
-                    ),
-                    const PopupMenuItem<int>(
-                      value: 2,
-                      child: Text("Utillisateurs"),
-                    ),
-                    const PopupMenuItem(
-                        value: 3, child: Text("Automatisations"))
-                  ];
+                    }
+                  });
                 },
-                onSelected: (value) {
-                  if (value == 0) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const BleDevices()),
-                    );
-                  } else if (value == 1) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PlacesScreen()),
-                    );
-                  } else if (value == 2) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const UsersScreen()),
-                    );
-                  } else if (value == 3) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AutomationsScreen()),
-                    );
-                  }
-                })
-          ]),
+                underline: Container(),
+                items:
+                    _buildings.map<DropdownMenuItem<String>>((Building value) {
+                  return DropdownMenuItem<String>(
+                    value: value.name,
+                    child: Text(value.name),
+                  );
+                }).toList(),
+                style: Theme.of(context).textTheme.titleLarge,
+                icon: const Icon(Icons.keyboard_arrow_down),
+              )
+            : CircularProgressIndicator(),
+        centerTitle: false,
+        automaticallyImplyLeading: false,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      SettingsScreen(), // Replace with your SettingsScreen
+                ),
+              );
+            },
+          ),
+          PopupMenuButton(
+            icon: const Icon(Icons.add_box_outlined),
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem<int>(
+                  value: 0,
+                  child: Text("Appareils"),
+                ),
+                const PopupMenuItem<int>(
+                  value: 1,
+                  child: Text("Lieux"),
+                ),
+                const PopupMenuItem<int>(
+                  value: 2,
+                  child: Text("Utillisateurs"),
+                ),
+                const PopupMenuItem(
+                  value: 3,
+                  child: Text("Automatisations"),
+                )
+              ];
+            },
+            onSelected: (value) {
+              if (value == 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BleDevices(),
+                  ),
+                );
+              } else if (value == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PlacesScreen(),
+                  ),
+                );
+              } else if (value == 2) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UsersScreen(),
+                  ),
+                );
+              } else if (value == 3) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AutomationsScreen(),
+                  ),
+                );
+              }
+            },
+          )
+        ],
+      ),
       body: Column(
         children: [
           Container(

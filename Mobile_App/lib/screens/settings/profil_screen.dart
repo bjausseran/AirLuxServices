@@ -1,14 +1,17 @@
 import 'dart:async';
 
+import 'package:airlux/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'login_screen.dart';
+import '../globals/user_context.dart' as user_context;
 
-class SignupScreen extends StatelessWidget {
-  SignupScreen({super.key});
+import 'add_iot_screen.dart'; // Import your AddIotScreen
+
+class ProfilScreen extends StatelessWidget {
+  ProfilScreen({super.key});
 
   // Text editing controllers
   final nameController = TextEditingController();
@@ -24,7 +27,7 @@ class SignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AirLux'),
+        title: const Text('Mon Profil'),
       ),
       body: SafeArea(
         child: Center(
@@ -33,7 +36,7 @@ class SignupScreen extends StatelessWidget {
             children: [
               // Bonjour
               Text(
-                'Créer un compte !',
+                'Modifier mon profil',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
 
@@ -78,12 +81,6 @@ class SignupScreen extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // Forgot password
-              TextButton(
-                  onPressed: () {}, child: const Text('Mot de passe oublié')),
-
-              const SizedBox(height: 20),
-
               // Login button
               ElevatedButton(
                 onPressed: () {
@@ -92,16 +89,16 @@ class SignupScreen extends StatelessWidget {
                     if (message.startsWith("OK")) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
+                          builder: (context) => HomeScreen(),
                         ),
                       );
                     }
                   });
 
                   webSocketChannel.sink.add(
-                      'tocloud//users//{"name": "${nameController.text}","email": "${emailController.text}", "password": "${passwordController.text}"}//insert');
+                      'tocloud//users//{"name": "${nameController.text}","email": "${emailController.text}", "password": "${passwordController.text}", "id": "${user_context.userId}"}//update');
                 },
-                child: const Text('Inscription'),
+                child: const Text('Mettre à jour'),
               ),
             ],
           ),
