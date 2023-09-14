@@ -5,11 +5,12 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:airlux/screens/home_screen.dart';
 import 'package:airlux/screens/login_and_signup/signup_screen.dart';
 import 'package:airlux/widgets/custom_textfield.dart';
+
 import '../globals/user_context.dart' as user_context;
 
 class LoginScreen extends StatefulWidget {
   final WebSocketChannel webSocketChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+      WebSocketChannel.connect(Uri.parse('ws://${user_context.serverIP}:6001'));
 
   LoginScreen({Key? key}) : super(key: key);
 

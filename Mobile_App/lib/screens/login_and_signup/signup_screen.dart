@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../globals/user_context.dart' as user_context;
+
 import 'login_screen.dart';
 
 class SignupScreen extends StatelessWidget {
@@ -16,7 +18,7 @@ class SignupScreen extends StatelessWidget {
   final passwordController = TextEditingController();
 
   final WebSocketChannel webSocketChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+      WebSocketChannel.connect(Uri.parse('ws://${user_context.serverIP}:6001'));
 
   StreamSubscription? _subscription;
 

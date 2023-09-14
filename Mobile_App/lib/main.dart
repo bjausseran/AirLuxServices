@@ -1,16 +1,14 @@
-import 'dart:async';
 
 import 'package:airlux/screens/login_and_signup/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
 
-  MyApp({super.key});
+  const MyApp({super.key});
 
   // This widget is the root our your application.
   @override
