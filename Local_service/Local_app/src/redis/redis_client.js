@@ -1,12 +1,15 @@
 //Redis
 'use strict';
 
+var isReady = false;
+var isError = false;
 // NOTE - Require
 const redis = require('redis');
 
 // NOTE - REDIS
 const client = redis.createClient({
-  url: 'redis://db_local',
+  //url: 'redis://db_local',
+  url: 'redis://127.0.0.1',
   port: 6379
 });
 function connection() {
@@ -36,10 +39,10 @@ async function postData(data){
     
     console.log("Try post value at " + time);
 
-    await client.set(time, data);
+    return await client.set(time, data);
 }
 
-function postCaptorValue(captorid, value){
+async function postCaptorValue(captorid, value){
   let data = {
       'captor_id' : captorid,
       'client_id' : process.env.CLIENT_ID,
@@ -52,40 +55,28 @@ function postCaptorValue(captorid, value){
   let json = JSON.parse(data_send);
   if(json.value && json.captor_id && json.client_id) {
       console.log("value type is OK");
-      postData(data_send);
+      const result = await postData(data_send);
+      return result.result;
   } else {
       console.log("ERROR value type in database");
+      return "ERROR"
   }
+}
   
 
-}
-
-// module.exports.connection = connection;
-// module.exports.disconnection = disconnection;
-// module.exports.postCaptorValue = postCaptorValue;
+client.on('error', function() {
+  if (! isReady && ! isError) {
+    // perform your MySQL setup here
+  }
+  isError = true;
+}).on('ready', function() {
+  isReady = true;
+});
 
 module.exports = {
+  client: client,
+  isReady: isReady,
   connection: connection,
   disconnection: disconnection,
-  postCaptorValue: function (captorid, value)
-    {
-        let data = {
-            'captor_id' : captorid,
-            'client_id' : process.env.CLIENT_ID,
-            'value': value
-        };
-        // Send to redis DB
-        let data_send = JSON.stringify(data);
-
-        // Filter data in redis DB
-        let json = JSON.parse(data_send);
-        if(json.value && json.captor_id && json.client_id) {
-            console.log("value type is OK");
-            postData(data_send);
-        } else {
-            console.log("ERROR value type in database");
-        }
-        
-        
-    }
+  postCaptorValue: postCaptorValue
 }

@@ -198,7 +198,7 @@ export class FSM {
         } else if ( currentMessage === "insert"  && context.currentController !== undefined && context.data !== undefined) {
             context.currentController.insert(context.data);
             const parsedData = JSON.parse(context.data);
-
+            context.ws.send("OK");
             if(context.currentController instanceof CaptorValueController)
             {
                 context.captorid = parsedData["captor_id"];

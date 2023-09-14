@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS AirLuxDB character set utf8mb4 collate utf8mb4_bin; 
 CREATE TABLE IF NOT EXISTS  AirLuxDB.users (
-    id VARCHAR(255) NOT NULL, 
+    id INT AUTO_INCREMENT, 
     email VARCHAR(255) NOT NULL, 
     password VARCHAR(255) NOT NULL, 
     name VARCHAR(255) NOT NULL, 
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS  AirLuxDB.users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
     UNIQUE INDEX id_UNIQUE (id ASC))CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE TABLE IF NOT EXISTS AirLuxDB.user_building (
-    id int  AUTO_INCREMENT, 
+    id int AUTO_INCREMENT, 
     building_id VARCHAR(255) NOT NULL, 
     user_id VARCHAR(255) NOT NULL, 
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
@@ -53,8 +53,6 @@ CREATE TABLE IF NOT EXISTS AirLuxDB.devices (
 
 CREATE USER 'root'@'syncapi.docker_iotnetwork' IDENTIFIED BY 'password'; 
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'syncapi.docker_iotnetwork' WITH GRANT OPTION; 
-CREATE USER 'root'@'%' IDENTIFIED BY 'password'; 
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION; 
 
 INSERT INTO `AirLuxDB`.`users` (`id`, `email`, `password`, `name`, `device_id`) VALUES ('1', 'test@gmail.com', 'pass', 'Benoît', '1');
 INSERT INTO `AirLuxDB`.`users` (`id`, `email`, `password`, `name`, `device_id`) VALUES ('2', 'test@ynov.com', 'pass', 'Aymeric', '2');

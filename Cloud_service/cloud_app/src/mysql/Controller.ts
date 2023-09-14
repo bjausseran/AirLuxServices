@@ -113,7 +113,7 @@ export class Controller{
       const parsedData = JSON.parse(json);
       // Check for invalid input
       if (this.checkInsertData(parsedData)) {
-        console.error('Invalid input. captor_id and value are required fields.');
+        console.error('Invalid input, some fields are required.');
         return;
       }
       
