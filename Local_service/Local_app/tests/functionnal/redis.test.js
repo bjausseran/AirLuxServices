@@ -5,18 +5,14 @@
 const redis = require('./../../src/redis/redis_client');
 
 
-describe("Testing redis logic", () => {
-
-  afterAll(() => {
-    redis.disconnection();
-  });
-
 redis.client.on('error', function() {
   
   describe("Error on set up", () => {
     test("Error on set up", () => {
       
       expect("Error").toBe("OK");
+      
+      redis.disconnection();
     })
   })
   
@@ -65,6 +61,8 @@ redis.client.on('error', function() {
           data = ['001', 23];
           result = await redis.postCaptorValue(data[0], data[1]);
           expect(result).toBe("OK");
+          
+          redis.disconnection();
         })
       })
     
@@ -73,6 +71,4 @@ redis.client.on('error', function() {
 
     
   })
-})
-
 });
