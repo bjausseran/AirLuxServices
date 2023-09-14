@@ -7,7 +7,7 @@ export class UserController extends Controller
     super();
     this.tableName = "users";
     this.updateStatement = `UPDATE ${this.tableName} SET name = ?, email = ?, password = ? WHERE id = ?`;
-    this.insertStatement = `INSERT INTO ${this.tableName} (id, name, email, password) VALUES (?, ?, ?, ?)`;
+    this.insertStatement = `INSERT INTO ${this.tableName} (name, email, password) VALUES (?, ?, ?)`;
   }
     
     
@@ -15,13 +15,13 @@ export class UserController extends Controller
     return !parsedData.id || !parsedData.name || !parsedData.email || !parsedData.password;
   }
   override checkInsertData(parsedData: any) : boolean{
-    return !parsedData.id || !parsedData.name || !parsedData.email || !parsedData.password;
+    return !parsedData.name || !parsedData.email || !parsedData.password;
   }
   override getUpdateData(parsedData: any) : any{
     return [parsedData.name, parsedData.email, parsedData.password, parsedData.id];
   }
   override getInsertData(parsedData: any) : any{
-    return [parsedData.id, parsedData.name, parsedData.email, parsedData.password];
+    return [parsedData.name, parsedData.email, parsedData.password];
   }
 // @ device_id field missing
 connect(email: string, password: string): Promise<string> {

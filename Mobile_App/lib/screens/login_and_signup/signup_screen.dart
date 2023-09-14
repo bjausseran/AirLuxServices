@@ -1,13 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:airlux/widgets/custom_textfield.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+import 'login_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
 
   // Text editing controllers
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  final WebSocketChannel webSocketChannel =
+      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+
+  StreamSubscription? _subscription;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +39,15 @@ class SignupScreen extends StatelessWidget {
 
               const SizedBox(height: 50),
 
+              // Name field
+              CustomTextfield(
+                controller: nameController,
+                emailText: true,
+                hintText: 'Name',
+                obscureText: false,
+              ),
+
+              const SizedBox(height: 20),
               // Email field
               CustomTextfield(
                 controller: emailController,
@@ -66,7 +86,21 @@ class SignupScreen extends StatelessWidget {
 
               // Login button
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  _subscription = webSocketChannel.stream.listen((message) {
+                    // Handle incoming message here
+                    if (message.startsWith("OK")) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => LoginScreen(),
+                        ),
+                      );
+                    }
+                  });
+
+                  webSocketChannel.sink.add(
+                      'tocloud//users//{"name": "${nameController.text}","email": "${emailController.text}", "password": "${passwordController.text}"}//insert');
+                },
                 child: const Text('Inscription'),
               ),
             ],
