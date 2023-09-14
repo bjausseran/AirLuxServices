@@ -29,7 +29,7 @@ describe("Testing redis.PostCaptorData", () => {
     test("Data shouldn't be valid", async () => {
       data = ['', '23'];
       result = await redis.postCaptorValue(data[0], data[1]);
-      expect(result).toBe("OK");
+      expect(result).toBe("ERROR");
     })
   })
   
@@ -37,7 +37,7 @@ describe("Testing redis.PostCaptorData", () => {
     test("Data shouldn't be valid", async () => {
       data = ['001', ''];
       result = await redis.postCaptorValue(data[0], data[1]);
-      expect(result).toBe("OK");
+      expect(result).toBe("ERROR");
     })
   })
   
