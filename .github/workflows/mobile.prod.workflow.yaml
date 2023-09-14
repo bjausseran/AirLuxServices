@@ -33,7 +33,7 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - name: Set necessary container up
-        run: docker-compose -f "Mobile_app/integration_test/dependencies/docker-compose.yaml" up -d --build
+        run: docker-compose -f "Mobile_App/integration_test/dependencies/docker-compose.yaml" up -d --build
       - name: "List all simulators"
         run: "xcrun xctrace list devices"
       - name: "Start Simulator"
