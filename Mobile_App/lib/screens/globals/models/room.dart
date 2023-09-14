@@ -7,9 +7,9 @@ class Room {
     required this.buildingId,
   });
 
-  String id;
+  int id;
   String name;
-  String buildingId;
+  int buildingId;
 
   Room.fromJson(Map<String, dynamic> json)
       : id = json['id'],

@@ -37,7 +37,7 @@ class HomeScreenState extends State<HomeScreen> {
     _subscription = widget.webSocketChannel.stream.listen((message) {
       // Données pour le menu déroulant
       try {
-        if (_buildings.isEmpty) {
+        if (user_context.buildings.isEmpty) {
           // Handle incoming message here
           Iterable l = json.decode(message);
           var data =
@@ -45,13 +45,13 @@ class HomeScreenState extends State<HomeScreen> {
 
           setState(() {
             _selectedBuilding = data[0];
-            _buildings = data;
+            user_context.buildings = data;
           });
 
           var str = "(";
-          for (int i = 0; i < _buildings.length; i++) {
-            str += _buildings[i].id.toString();
-            if (i != _buildings.length - 1) {
+          for (int i = 0; i < user_context.buildings.length; i++) {
+            str += user_context.buildings[i].id.toString();
+            if (i != user_context.buildings.length - 1) {
               str += ", ";
             }
           }
@@ -59,20 +59,20 @@ class HomeScreenState extends State<HomeScreen> {
 
           widget.webSocketChannel.sink
               .add("tocloud//rooms//where{#}building_id IN $str//get");
-        } else if (_rooms.isEmpty) {
+        } else if (user_context.rooms.isEmpty) {
           // Handle incoming message here
           Iterable l = json.decode(message);
           var data = List<Room>.from(l.map((model) => Room.fromJson(model)));
 
           setState(() {
             _selectedRoom = data[0];
-            _rooms = data;
+            user_context.rooms = data;
           });
 
           var str = "(";
-          for (int i = 0; i < _buildings.length; i++) {
-            str += _buildings[i].id.toString();
-            if (i != _buildings.length - 1) {
+          for (int i = 0; i < user_context.buildings.length; i++) {
+            str += user_context.buildings[i].id.toString();
+            if (i != user_context.buildings.length - 1) {
               str += ", ";
             }
           }
@@ -87,17 +87,18 @@ class HomeScreenState extends State<HomeScreen> {
               List<Captor>.from(l.map((model) => Captor.fromJson(model)));
 
           setState(() {
-            _captors = data;
+            user_context.captors = data;
             allCards.clear();
-            for (int i = 0; i < _captors.length; i++) {
-              var building = _buildings.firstWhere((element) =>
+            for (int i = 0; i < user_context.captors.length; i++) {
+              var building = user_context.buildings.firstWhere((element) =>
                   element.id ==
-                  _rooms
-                      .firstWhere((element) => element.id == _captors[i].roomId)
+                  user_context.rooms
+                      .firstWhere((element) =>
+                          element.id == user_context.captors[i].roomId)
                       .buildingId);
 
-              var room = _rooms
-                  .firstWhere((element) => element.id == _captors[i].roomId);
+              var room = user_context.rooms.firstWhere(
+                  (element) => element.id == user_context.captors[i].roomId);
 
               var ico = Icons.lightbulb;
               var ico_outlined = Icons.lightbulb_outline;
@@ -105,44 +106,46 @@ class HomeScreenState extends State<HomeScreen> {
               var textOn = "Allumées";
               var textOff = "Éteintes";
               var switchval = true;
+              var isValued = false;
               var val = "";
 
-              switch (_captors[i].type) {
+              switch (user_context.captors[i].type) {
                 case CaptorType.light:
                   ico = Icons.lightbulb;
                   ico_outlined = Icons.lightbulb_outline;
                   textOn = "Allumée";
                   textOff = "Éteinte";
-                  switchval = _captors[i].value == 1;
+                  switchval = user_context.captors[i].value == 1;
                   break;
                 case CaptorType.temp:
                   ico = Icons.thermostat;
                   ico_outlined = Icons.thermostat_outlined;
                   textOn = "On";
                   textOff = "Off";
+                  isValued = true;
                   switchval = true;
-                  val = _captors[i].value.toString();
+                  val = user_context.captors[i].value.toString() + '°C';
                   break;
                 case CaptorType.door:
                   ico = Icons.door_front_door;
                   ico_outlined = Icons.door_front_door_outlined;
                   textOn = "Ouverte";
                   textOff = "Fermée";
-                  switchval = _captors[i].value == 1;
+                  switchval = user_context.captors[i].value == 1;
                   break;
                 case CaptorType.shutter:
                   ico = Icons.shutter_speed;
                   ico_outlined = Icons.shutter_speed_outlined;
                   textOn = "Ouvert";
                   textOff = "Fermé";
-                  switchval = _captors[i].value == 1;
+                  switchval = user_context.captors[i].value == 1;
                   break;
                 case CaptorType.move:
                   ico = Icons.crisis_alert;
                   ico_outlined = Icons.crisis_alert_outlined;
                   textOn = "Alert";
                   textOff = "Ok";
-                  switchval = _captors[i].value == 1;
+                  switchval = user_context.captors[i].value == 1;
                   break;
                 default:
                   ico = Icons.lightbulb;
@@ -151,8 +154,8 @@ class HomeScreenState extends State<HomeScreen> {
               allCards.add(CustomCard(
                 icon: ico,
                 outlinedIcon: ico_outlined,
-                title: _captors[i].name,
-                subtitle: _captors[i].name,
+                title: user_context.captors[i].name,
+                subtitle: user_context.captors[i].name,
                 value: val,
                 pillTextOn: textOn,
                 pillTextOff: textOff,
@@ -161,8 +164,9 @@ class HomeScreenState extends State<HomeScreen> {
                 room: room.name,
                 onSwitchChanged: (value) {
                   widget.webSocketChannel.sink.add(
-                      'tocloud//captor_values//{"captor_id":"${_captors[i].id}", "value": "${value == true ? 1.toString() : 0.toString()}"}//insert');
+                      'tocloud//captor_values//{"captor_id":"${user_context.captors[i].id}", "value": "${value == true ? 1.toString() : 0.toString()}"}//insert');
                 },
+                isValued: isValued,
               ));
             }
           });
@@ -181,14 +185,10 @@ class HomeScreenState extends State<HomeScreen> {
 
   // Données pour le menu déroulant
   late Building? _selectedBuilding;
-  late List<Building> _buildings = List.empty(growable: true);
 
   // Index de la pièce sélectionnée
   bool everyRoom = true;
   late Room? _selectedRoom;
-  late List<Room> _rooms = List.empty(growable: true);
-
-  late List<Captor> _captors = List.empty(growable: true);
 
   // Tableau des cards
   List<CustomCard> allCards = [];
@@ -197,22 +197,22 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _buildings.isNotEmpty
+        title: user_context.buildings.isNotEmpty
             ? DropdownButton<String>(
                 value: _selectedBuilding == null ? "" : _selectedBuilding!.name,
                 onChanged: (String? newValue) {
                   setState(() {
                     if (_selectedBuilding == null) return;
-                    for (int i = 0; i < _buildings.length; i++) {
-                      if (_buildings[i].name == newValue) {
-                        _selectedBuilding = _buildings[i];
+                    for (int i = 0; i < user_context.buildings.length; i++) {
+                      if (user_context.buildings[i].name == newValue) {
+                        _selectedBuilding = user_context.buildings[i];
                       }
                     }
                   });
                 },
                 underline: Container(),
-                items:
-                    _buildings.map<DropdownMenuItem<String>>((Building value) {
+                items: user_context.buildings
+                    .map<DropdownMenuItem<String>>((Building value) {
                   return DropdownMenuItem<String>(
                     value: value.name,
                     child: Text(value.name),
@@ -299,16 +299,16 @@ class HomeScreenState extends State<HomeScreen> {
             // width: 100,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             height: 20,
-            child: _rooms.isNotEmpty
+            child: user_context.rooms.isNotEmpty
                 // &&
-                //         _rooms
+                //         user_context.rooms
                 //             .where((element) =>
                 //                 // ignore: unrelated_type_equality_checks
                 //                 element.buildingId == _selectedBuilding)
                 //             .isNotEmpty
                 ? ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: _rooms
+                    itemCount: user_context.rooms
                             .where((element) =>
                                 element.buildingId == _selectedBuilding!.id)
                             .length +
@@ -316,14 +316,14 @@ class HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (BuildContext context, int index) {
                       final String roomName = index == 0
                           ? "Tout"
-                          : _rooms
+                          : user_context.rooms
                               .where((element) =>
                                   element.buildingId == _selectedBuilding!.id)
                               .toList()[index - 1]
                               .name;
                       final bool isSelected = roomName == "Tout" ||
                           roomName ==
-                              _rooms
+                              user_context.rooms
                                   .where((element) =>
                                       element.buildingId ==
                                       _selectedBuilding!.id)
@@ -334,11 +334,14 @@ class HomeScreenState extends State<HomeScreen> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              for (int i = 0; i < _rooms.length; i++) {
+                              for (int i = 0;
+                                  i < user_context.rooms.length;
+                                  i++) {
                                 if (roomName == "Tout") {
                                   everyRoom = true;
-                                } else if (_rooms[i].name == roomName) {
-                                  _selectedRoom = _rooms[i];
+                                } else if (user_context.rooms[i].name ==
+                                    roomName) {
+                                  _selectedRoom = user_context.rooms[i];
                                   everyRoom = false;
                                 }
                               }
@@ -376,17 +379,19 @@ class HomeScreenState extends State<HomeScreen> {
                           ? allCards
                               .map((card) {
                                 return CustomCard(
-                                    icon: card.icon,
-                                    outlinedIcon: card.outlinedIcon,
-                                    title: card.title,
-                                    subtitle: card.subtitle,
-                                    value: card.value,
-                                    pillTextOn: card.pillTextOn,
-                                    pillTextOff: card.pillTextOff,
-                                    switchValue: card.switchValue,
-                                    building: card.building,
-                                    room: card.room,
-                                    onSwitchChanged: card.onSwitchChanged);
+                                  icon: card.icon,
+                                  outlinedIcon: card.outlinedIcon,
+                                  title: card.title,
+                                  subtitle: card.subtitle,
+                                  value: card.value,
+                                  pillTextOn: card.pillTextOn,
+                                  pillTextOff: card.pillTextOff,
+                                  switchValue: card.switchValue,
+                                  building: card.building,
+                                  room: card.room,
+                                  onSwitchChanged: card.onSwitchChanged,
+                                  isValued: card.isValued,
+                                );
                               })
                               .where((card) =>
                                   card.building == _selectedBuilding!.name)
@@ -394,17 +399,19 @@ class HomeScreenState extends State<HomeScreen> {
                           : allCards
                               .map((card) {
                                 return CustomCard(
-                                    icon: card.icon,
-                                    outlinedIcon: card.outlinedIcon,
-                                    title: card.title,
-                                    subtitle: card.subtitle,
-                                    value: card.value,
-                                    pillTextOn: card.pillTextOn,
-                                    pillTextOff: card.pillTextOff,
-                                    switchValue: card.switchValue,
-                                    building: card.building,
-                                    room: card.room,
-                                    onSwitchChanged: card.onSwitchChanged);
+                                  icon: card.icon,
+                                  outlinedIcon: card.outlinedIcon,
+                                  title: card.title,
+                                  subtitle: card.subtitle,
+                                  value: card.value,
+                                  pillTextOn: card.pillTextOn,
+                                  pillTextOff: card.pillTextOff,
+                                  switchValue: card.switchValue,
+                                  building: card.building,
+                                  room: card.room,
+                                  onSwitchChanged: card.onSwitchChanged,
+                                  isValued: card.isValued,
+                                );
                               })
                               .where((card) =>
                                   card.room == _selectedRoom!.name &&
