@@ -9,14 +9,17 @@ const redis = require('redis');
 // NOTE - REDIS
 const client = redis.createClient({
   url: 'redis://db_local',
-  //url: 'redis://127.0.0.1',
+  //url: 'redis://localhost',
   port: 6379
 });
-function connection() {
-  client.connect(function(err) {
+async function connection() {
+  
+  console.log('Redis try connect');
+  const result = await client.connect(function(err) {
     if(err) throw err;
     console.log("Redis database connected!")
   })
+  console.log('Redis connected ? '  + result);
 }
 function disconnection() {
   client.disconnect(function(err) {
@@ -27,6 +30,7 @@ function disconnection() {
 // --------------------
 
 // NOTE - Redis connection
+console.log('Redis try connect');
 connection();
 
 
@@ -55,7 +59,7 @@ async function postCaptorValue(captorid, value){
   if(json.value && json.captor_id) {
       console.log("value type is OK");
       const result = await postData(data_send);
-      return result.result;
+      return result;
   } else {
       console.log("ERROR value type in database");
       return "ERROR"

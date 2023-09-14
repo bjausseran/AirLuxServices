@@ -17,7 +17,6 @@ const client = redis.createClient({
 let isReady = false;
 let data = {
     'captor_id' : "001",
-    'client_id' : "q8sf651-654sdf-45s-7qd54",
     'value': "23"
 };
 // Send to redis DB
