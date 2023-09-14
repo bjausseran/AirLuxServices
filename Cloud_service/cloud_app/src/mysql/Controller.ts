@@ -164,7 +164,7 @@ export class Controller{
     
       connection.execute(sql, data, function(err, result) {
         if (err) throw err;
-        console.log('building updated successfully, result = ' + result);
+        console.log('item updated successfully, result = ' + result);
       });
       connection.release();
     })
