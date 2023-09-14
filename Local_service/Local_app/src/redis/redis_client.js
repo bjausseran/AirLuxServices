@@ -8,8 +8,8 @@ const redis = require('redis');
 
 // NOTE - REDIS
 const client = redis.createClient({
-  //url: 'redis://db_local',
-  url: 'redis://127.0.0.1',
+  url: 'redis://db_local',
+  //url: 'redis://127.0.0.1',
   port: 6379
 });
 function connection() {
