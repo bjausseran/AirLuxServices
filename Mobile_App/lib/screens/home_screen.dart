@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:js_interop';
 
 import 'package:airlux/screens/automations_screen.dart';
 import 'package:airlux/screens/ble_devices_screen.dart';
@@ -161,7 +159,6 @@ class HomeScreenState extends State<HomeScreen> {
                 building: building.name,
                 room: room.name,
                 onSwitchChanged: (value) {
-                  var currentTimestamp = DateTime.now();
                   widget.webSocketChannel.sink.add(
                       'tocloud//captor_values//{"captor_id":"${_captors[i].id}", "value": "${value == true ? 1.toString() : 0.toString()}"}//insert');
                 },
@@ -202,12 +199,11 @@ class HomeScreenState extends State<HomeScreen> {
           // title: const Text('Accueil'),
           title: _buildings.isNotEmpty
               ? DropdownButton<String>(
-                  value: _selectedBuilding.isUndefinedOrNull
-                      ? ""
-                      : _selectedBuilding!.name,
+                  value:
+                      _selectedBuilding == null ? "" : _selectedBuilding!.name,
                   onChanged: (String? newValue) {
                     setState(() {
-                      if (_selectedBuilding.isUndefinedOrNull) return;
+                      if (_selectedBuilding == null) return;
                       for (int i = 0; i < _buildings.length; i++) {
                         if (_buildings[i].name == newValue) {
                           _selectedBuilding = _buildings[i];
