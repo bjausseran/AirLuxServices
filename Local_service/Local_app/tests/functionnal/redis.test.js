@@ -29,34 +29,34 @@ redis.client.on('error', function() {
       })
       
       describe("no ID creation", () => {
-        test("Data shouldn't be valid", () => {
+        test("Data shouldn't be valid", async () => {
           data = ['', '23'];
-          result = redis.postCaptorValue(data[0], data[1]);
+          result = await redis.postCaptorValue(data[0], data[1]);
           expect(result).toBe("OK");
         })
       })
       
       describe("no value creation", () => {
-        test("Data shouldn't be valid", () => {
+        test("Data shouldn't be valid", async () => {
           data = ['001', ''];
-          result = redis.postCaptorValue(data[0], data[1]);
+          result = await redis.postCaptorValue(data[0], data[1]);
           expect(result).toBe("OK");
         })
       })
       
       describe("ID is a integer creation", () => {
-        test("Data should be valid", () => {
+        test("Data should be valid", async () => {
           data = [1, '23'];
-          result = redis.postCaptorValue(data[0], data[1]);
+          result = await redis.postCaptorValue(data[0], data[1]);
           expect(result).toBe("OK");
         })
       })
       
       
       describe("Value is a integer creation", () => {
-        test("Data should be valid", () => {
+        test("Data should be valid", async () => {
           data = ['001', 23];
-          result = redis.postCaptorValue(data[0], data[1]);
+          result = await redis.postCaptorValue(data[0], data[1]);
           expect(result).toBe("OK");
         })
       })
