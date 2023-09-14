@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 
 const IP = "cloud_app";
+//const IP = "localhost";
 
 const ws = new WebSocket(`ws://${IP}:6001`);
 console.log(`Try connect to ws://${IP}:6001`);
