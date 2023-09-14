@@ -45,7 +45,6 @@ async function postData(data){
 async function postCaptorValue(captorid, value){
   let data = {
       'captor_id' : captorid,
-      'client_id' : process.env.CLIENT_ID,
       'value': value
   };
   // Send to redis DB
@@ -53,7 +52,7 @@ async function postCaptorValue(captorid, value){
 
   // Filter data in redis DB
   let json = JSON.parse(data_send);
-  if(json.value && json.captor_id && json.client_id) {
+  if(json.value && json.captor_id) {
       console.log("value type is OK");
       const result = await postData(data_send);
       return result.result;
