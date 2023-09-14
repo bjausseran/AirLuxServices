@@ -50,3 +50,6 @@
 1694686623: New client connected from 172.18.0.6:39456 as mqttjs_8c7b5e3c (p2, c1, k60).
 1694686623: New client connected from 172.18.0.6:39458 as mqttjs_9cf0aca6 (p2, c1, k60).
 1694688421: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1694690222: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1694691161: Client mqttjs_9cf0aca6 closed its connection.
+1694691161: Client mqttjs_8c7b5e3c closed its connection.
