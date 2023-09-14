@@ -6,7 +6,8 @@ import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../login_and_signup/login_screen.dart';
-import 'profil_screen.dart'; // Import your ProfilScreen
+import 'profil_screen.dart';
+import 'management_screen.dart';
 import 'add_iot_screen.dart'; // Import your AddIotScreen
 
 class SettingsScreen extends StatelessWidget {
@@ -26,14 +27,14 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Paramètres'),
       ),
       body: SafeArea(
         child: Column(
           children: [
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Mon Profil'),
+              leading: const Icon(Icons.person),
+              title: const Text('Mon Profil'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -45,14 +46,14 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.add),
-              title: Text('Gestion IOT'),
+              leading: const Icon(Icons.broadcast_on_personal),
+              title: const Text('Gestion du parc'),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        AddIotScreen(), // Navigate to AddIotScreen
+                        ManagementScreen(), // Navigate to AddIotScreen
                   ),
                 );
               },

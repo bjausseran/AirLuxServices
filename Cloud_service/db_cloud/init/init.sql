@@ -4,47 +4,47 @@ CREATE TABLE IF NOT EXISTS  AirLuxDB.users (
     email VARCHAR(255) NOT NULL, 
     password VARCHAR(255) NOT NULL, 
     name VARCHAR(255) NOT NULL, 
-    device_id VARCHAR(255), 
+    device_id INT, 
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
     UNIQUE INDEX id_UNIQUE (id ASC))CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE TABLE IF NOT EXISTS AirLuxDB.user_building (
     id int AUTO_INCREMENT, 
-    building_id VARCHAR(255) NOT NULL, 
-    user_id VARCHAR(255) NOT NULL, 
+    building_id INT NOT NULL, 
+    user_id INT NOT NULL, 
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
     UNIQUE INDEX id_UNIQUE (id ASC))CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE TABLE IF NOT EXISTS AirLuxDB.buildings (
-    id VARCHAR(255) NOT NULL, 
+    id INT AUTO_INCREMENT, 
     name VARCHAR(255) NOT NULL, 
     type VARCHAR(255), 
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
     UNIQUE INDEX id_UNIQUE (id ASC))CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE TABLE IF NOT EXISTS AirLuxDB.rooms (
-    id VARCHAR(255) NOT NULL, 
-    building_id VARCHAR(255) NOT NULL, 
+    id INT AUTO_INCREMENT, 
+    building_id INT NOT NULL, 
     name VARCHAR(255) NOT NULL, 
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
     UNIQUE INDEX id_UNIQUE (id ASC))CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE TABLE IF NOT EXISTS AirLuxDB.captors (
-    id VARCHAR(255) NOT NULL, 
+    id INT AUTO_INCREMENT, 
     name VARCHAR(255) NOT NULL, 
     type VARCHAR(255) NOT NULL, 
-    room_id VARCHAR(255) NOT NULL, 
+    room_id INT NOT NULL, 
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
     UNIQUE INDEX id_UNIQUE (id ASC))CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE TABLE IF NOT EXISTS AirLuxDB.captor_values (
     id INT AUTO_INCREMENT,
-    captor_id VARCHAR(255) NOT NULL,
+    captor_id INT NOT NULL,
     value INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
     UNIQUE INDEX id_UNIQUE (id ASC))CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE TABLE IF NOT EXISTS AirLuxDB.devices (
-    id VARCHAR(255) NOT NULL, 
+    id INT AUTO_INCREMENT, 
     apns_token VARCHAR(255) NOT NULL, 
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
@@ -77,16 +77,16 @@ INSERT INTO `AirLuxDB`.`rooms` (`id`, `building_id`, `name`) VALUES ('7', '4', '
 
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('1', 'Thermo', 'temp', '1');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('2', 'Lustre', 'light', '1');
-INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('3', 'Lumière', 'light', '2');
-INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('4', 'Lumière', 'light', '3');
-INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('5', 'Porte entrée', 'door', '1');
+INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('3', 'Lumiere', 'light', '2');
+INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('4', 'Lumiere', 'light', '3');
+INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('5', 'Porte entree', 'door', '1');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('6', 'Thermo', 'temp', '4');
-INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('7', 'Lumière', 'light', '4');
-INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('8', 'Lumière', 'light', '5');
-INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('9', 'Lumière', 'light', '6');
+INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('7', 'Lumiere', 'light', '4');
+INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('8', 'Lumiere', 'light', '5');
+INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('9', 'Lumiere', 'light', '6');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('10', 'Garage', 'door', '6');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('11', 'Porte', 'door', '7');
-INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('12', 'Lumière', 'light', '7');
+INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('12', 'Lumiere', 'light', '7');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('13', 'Volet', 'shutter', '1');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('14', 'Volet', 'shutter', '2');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('15', 'Movement', 'move', '3');
