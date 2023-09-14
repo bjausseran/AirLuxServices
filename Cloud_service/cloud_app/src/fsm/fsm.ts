@@ -214,6 +214,7 @@ export class FSM {
             state.trigger( "insert" );
         } else if ( currentMessage === "update" && context.currentController !== undefined && context.data !== undefined) {
             context.currentController.update(context.data);
+            context.ws.send("OK");
             state.trigger( "update" );
         } else if ( currentMessage === "delete"&& context.currentController !== undefined && context.data !== undefined ) {
             context.currentController?.remove(context.data);
