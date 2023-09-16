@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:airlux/screens/automations_screen.dart';
-import 'package:airlux/screens/ble_devices_screen.dart';
 import 'package:airlux/screens/globals/models/building.dart';
 import 'package:airlux/screens/globals/models/room.dart';
 import 'package:airlux/screens/palces_screen.dart';
@@ -16,7 +15,7 @@ import 'settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final WebSocketChannel webSocketChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+      WebSocketChannel.connect(Uri.parse('ws://${user_context.serverIP}:6001'));
 
   HomeScreen({Key? key}) : super(key: key);
 
@@ -101,7 +100,7 @@ class HomeScreenState extends State<HomeScreen> {
                   (element) => element.id == user_context.captors[i].roomId);
 
               var ico = Icons.lightbulb;
-              var ico_outlined = Icons.lightbulb_outline;
+              var icoOutlined = Icons.lightbulb_outline;
 
               var textOn = "Allumées";
               var textOff = "Éteintes";
@@ -112,14 +111,14 @@ class HomeScreenState extends State<HomeScreen> {
               switch (user_context.captors[i].type) {
                 case CaptorType.light:
                   ico = Icons.lightbulb;
-                  ico_outlined = Icons.lightbulb_outline;
+                  icoOutlined = Icons.lightbulb_outline;
                   textOn = "Allumée";
                   textOff = "Éteinte";
                   switchval = user_context.captors[i].value == 1;
                   break;
                 case CaptorType.temp:
                   ico = Icons.thermostat;
-                  ico_outlined = Icons.thermostat_outlined;
+                  icoOutlined = Icons.thermostat_outlined;
                   textOn = "On";
                   textOff = "Off";
                   isValued = true;
@@ -128,21 +127,21 @@ class HomeScreenState extends State<HomeScreen> {
                   break;
                 case CaptorType.door:
                   ico = Icons.door_front_door;
-                  ico_outlined = Icons.door_front_door_outlined;
+                  icoOutlined = Icons.door_front_door_outlined;
                   textOn = "Ouverte";
                   textOff = "Fermée";
                   switchval = user_context.captors[i].value == 1;
                   break;
                 case CaptorType.shutter:
                   ico = Icons.shutter_speed;
-                  ico_outlined = Icons.shutter_speed_outlined;
+                  icoOutlined = Icons.shutter_speed_outlined;
                   textOn = "Ouvert";
                   textOff = "Fermé";
                   switchval = user_context.captors[i].value == 1;
                   break;
                 case CaptorType.move:
                   ico = Icons.crisis_alert;
-                  ico_outlined = Icons.crisis_alert_outlined;
+                  icoOutlined = Icons.crisis_alert_outlined;
                   textOn = "Alert";
                   textOff = "Ok";
                   switchval = user_context.captors[i].value == 1;
@@ -153,7 +152,7 @@ class HomeScreenState extends State<HomeScreen> {
 
               allCards.add(CustomCard(
                 icon: ico,
-                outlinedIcon: ico_outlined,
+                outlinedIcon: icoOutlined,
                 title: user_context.captors[i].name,
                 subtitle: user_context.captors[i].name,
                 value: val,
@@ -221,12 +220,12 @@ class HomeScreenState extends State<HomeScreen> {
                 style: Theme.of(context).textTheme.titleMedium,
                 icon: const Icon(Icons.keyboard_arrow_down),
               )
-            : CircularProgressIndicator(),
+            : const CircularProgressIndicator(),
         centerTitle: false,
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.push(
                 context,
@@ -260,14 +259,7 @@ class HomeScreenState extends State<HomeScreen> {
               ];
             },
             onSelected: (value) {
-              if (value == 0) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const BleDevices(),
-                  ),
-                );
-              } else if (value == 1) {
+              if (value == 1) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -361,7 +353,7 @@ class HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   )
-                : CircularProgressIndicator(), // Display a loading indicator,
+                : const CircularProgressIndicator(), // Display a loading indicator,
           ),
           const SizedBox(
             height: 20,
