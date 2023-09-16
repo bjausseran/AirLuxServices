@@ -52,9 +52,10 @@ class _BluetoothAppState extends State<AddIotScreen> {
 
   void startBluetoothScan() async {
     
-    final status = await Permission.bluetoothConnect.request();
+  final status = await Permission.bluetoothConnect.request();
+  final statuScan = await Permission.bluetoothScan.request();
 
-  if (status.isGranted) {
+  if (status.isGranted && statuScan.isGranted) {
     flutterBlue.startScan(timeout: const Duration(seconds: 4));
 
     flutterBlue.scanResults.listen((scanResultList) {
@@ -94,7 +95,7 @@ class _BluetoothAppState extends State<AddIotScreen> {
         if (service.uuid == serviceUuid) {
           for (final characteristic in service.characteristics) {
             if (characteristic.uuid == characteristicUuid) {
-              final dataToSend = utf8.encode("ID: $id, Password: $password");
+              final dataToSend = utf8.encode("$id,$password");
               await characteristic.write(dataToSend, withoutResponse: true);
               print("Données envoyées avec succès à l'appareil Bluetooth");
               return;
