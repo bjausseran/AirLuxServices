@@ -218,7 +218,7 @@ class HomeScreenState extends State<HomeScreen> {
                     child: Text(value.name),
                   );
                 }).toList(),
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleMedium,
                 icon: const Icon(Icons.keyboard_arrow_down),
               )
             : CircularProgressIndicator(),
@@ -350,7 +350,7 @@ class HomeScreenState extends State<HomeScreen> {
                           child: Text(
                             roomName,
                             style: TextStyle(
-                              color: isSelected ? Colors.lime : Colors.black,
+                              color: isSelected ? Colors.teal : Colors.black,
                               fontWeight: isSelected
                                   ? FontWeight.bold
                                   : FontWeight.normal,

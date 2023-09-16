@@ -1,18 +1,14 @@
 import 'dart:async';
 
 import 'package:airlux/screens/globals/models/building.dart';
-import 'package:airlux/screens/globals/models/room.dart';
-import 'package:airlux/screens/home_screen.dart';
-import 'package:airlux/screens/settings/management_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../globals/user_context.dart' as user_context;
+import '../../globals/user_context.dart' as user_context;
 
-import 'add_iot_screen.dart';
-import 'building_screen.dart'; // Import your AddIotScreen
+import '../buildings/building_screen.dart'; // Import your AddIotScreen
 
 class AddRoomScreen extends StatefulWidget {
   AddRoomScreen({required this.building, super.key});

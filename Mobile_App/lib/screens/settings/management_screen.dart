@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'building_screen.dart';
-import 'add_building_screen.dart';
+import 'buildings/building_screen.dart';
+import 'buildings/add_building_screen.dart';
 
 import '../globals/user_context.dart' as user_context;
 
@@ -70,7 +70,7 @@ class ManagementScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestion batiments'),
+        title: const Text('Gestion du parc'),
       ),
       body: SafeArea(
         child: Column(

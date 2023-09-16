@@ -1,19 +1,20 @@
 import 'dart:async';
 
-import 'package:airlux/screens/settings/add_iot_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../globals/models/captor.dart';
-import '../globals/models/room.dart';
-import '../globals/user_context.dart' as user_context;
+import '../../globals/models/building.dart';
+import '../../globals/user_context.dart' as user_context;
+import '../IOT/connect_box_screen.dart';
+import '../rooms/room_screen.dart'; // Import your RoomScreen
+import '../rooms/add_room_screen.dart'; // Import your RoomScreen
 
-class RoomScreen extends StatefulWidget {
-  RoomScreen(this.room, {super.key});
+class BuildingScreen extends StatefulWidget {
+  BuildingScreen(this.building, {super.key});
 
-  final Room room;
+  final Building building;
 
   // Text editing controllers
   final nameController = TextEditingController();
@@ -22,12 +23,12 @@ class RoomScreen extends StatefulWidget {
       WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
 
   @override
-  State<StatefulWidget> createState() => RoomScreenState();
+  State<StatefulWidget> createState() => BuildingScreenState();
 }
 
-class RoomScreenState extends State<RoomScreen> {
+class BuildingScreenState extends State<BuildingScreen> {
   StreamSubscription? _subscription;
-  List<Widget> listCaptor = [];
+  List<Widget> listRoom = [];
 
   String? dropdownvalue = "Large";
   var items = ['Large', 'Medium', 'Small'];
@@ -39,44 +40,39 @@ class RoomScreenState extends State<RoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    widget.nameController.text = widget.room.name;
+    widget.nameController.text = widget.building.name;
+    dropdownvalue = widget.building.type;
 
-    listCaptor.add(
+    listRoom.add(
+      ListTile(
+        leading: const Icon(Icons.settings_input_antenna),
+        title: Text("Connecter ma box"),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConnectBoxScreen(
+                  building: widget.building), // Navigate to ConnectBoxScreen
+            ),
+          );
+        },
+      ),
+    );
+
+    listRoom.add(
       const ListTile(
         leading: null,
-        title: Text("Objets connectés"),
+        title: Text("Pièces"),
         enabled: false,
       ),
     );
 
-    for (int i = 0; i < user_context.captors.length; i++) {
-      var ico = Icons.broadcast_on_home;
-
-      switch (user_context.captors[i].type) {
-        case CaptorType.light:
-          ico = Icons.lightbulb;
-          break;
-        case CaptorType.temp:
-          ico = Icons.thermostat;
-          break;
-        case CaptorType.door:
-          ico = Icons.door_front_door;
-          break;
-        case CaptorType.shutter:
-          ico = Icons.shutter_speed;
-          break;
-        case CaptorType.move:
-          ico = Icons.crisis_alert;
-          break;
-        default:
-          ico = Icons.lightbulb;
-      }
-
-      if (user_context.captors[i].roomId == widget.room.id) {
-        listCaptor.add(
+    for (int i = 0; i < user_context.rooms.length; i++) {
+      if (user_context.rooms[i].buildingId == widget.building.id) {
+        listRoom.add(
           ListTile(
-            leading: Icon(ico),
-            title: Text(user_context.captors[i].name),
+            leading: const Icon(Icons.window),
+            title: Text(user_context.rooms[i].name),
             onTap: () {
               Navigator.push(
                 context,
@@ -90,17 +86,16 @@ class RoomScreenState extends State<RoomScreen> {
         );
       }
     }
-    listCaptor.add(
+    listRoom.add(
       ListTile(
         leading: const Icon(Icons.add),
-        title: Text("Ajouter un objet connecté"),
+        title: Text("Ajouter une pièce"),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddIotScreen(
-                  //room: widget.room
-                  ), // Navigate to RoomScreen
+              builder: (context) => AddRoomScreen(
+                  building: widget.building), // Navigate to RoomScreen
             ),
           );
         },
@@ -109,7 +104,7 @@ class RoomScreenState extends State<RoomScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Gerer la pièce"),
+        title: const Text("Gerer le bâtiment"),
       ),
       body: SafeArea(
         child: Column(
@@ -121,15 +116,33 @@ class RoomScreenState extends State<RoomScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    widget.room.name,
+                    widget.building.name,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 50),
                   CustomTextfield(
                     controller: widget.nameController,
                     emailText: false,
-                    hintText: widget.room.name,
+                    hintText: widget.building.name,
                     obscureText: false,
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: DropdownButton(
+                      isExpanded: true,
+                      value: dropdownvalue,
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      items: items.map((items) {
+                        return DropdownMenuItem(
+                            value: items, child: Text(items));
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          dropdownvalue = newValue;
+                        });
+                      },
+                    ),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
@@ -140,14 +153,15 @@ class RoomScreenState extends State<RoomScreen> {
                         if (message.startsWith("OK")) {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => RoomScreen(widget.room),
+                              builder: (context) =>
+                                  BuildingScreen(widget.building),
                             ),
                           );
                         }
                       });
 
                       widget.webSocketChannel.sink.add(
-                        'tocloud//rooms//{"name": "${widget.nameController.text}","building_id": ${widget.room.buildingId}}//insert',
+                        'tocloud//buildings//{"id": ${widget.building.id}, "name": "${widget.nameController.text}", "type": "${dropdownvalue}", "user_id": ${user_context.userId}}//update',
                       );
                     },
                     child: const Text('Mettre à jour'),
@@ -158,7 +172,7 @@ class RoomScreenState extends State<RoomScreen> {
             // List Section
             Expanded(
               child: ListView(
-                children: listCaptor,
+                children: listRoom,
               ),
             ),
           ],

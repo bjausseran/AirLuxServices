@@ -8,29 +8,28 @@ import 'package:flutter/material.dart';
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../globals/user_context.dart' as user_context;
+import '../../globals/user_context.dart' as user_context;
 
-import 'add_iot_screen.dart'; // Import your AddIotScreen
+import '../IOT/add_iot_screen.dart';
+import '../buildings/building_screen.dart'; // Import your AddIotScreen
 
-class AddBuildingScreen extends StatefulWidget {
-  AddBuildingScreen({super.key});
+class ConnectBoxScreen extends StatefulWidget {
+  ConnectBoxScreen({required this.building, super.key});
 
+  Building building;
   // Text editing controllers
-  final nameController = TextEditingController();
+  final SSIDController = TextEditingController();
+  final passwordController = TextEditingController();
 
   final WebSocketChannel webSocketChannel =
       WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
 
   @override
-  State<StatefulWidget> createState() => AddBuildingScreenState();
+  State<StatefulWidget> createState() => AddConnectBoxScreenState();
 }
 
-class AddBuildingScreenState extends State<AddBuildingScreen> {
+class AddConnectBoxScreenState extends State<ConnectBoxScreen> {
   StreamSubscription? _subscription;
-
-  String? dropdownvalue = 'Large';
-
-  var items = ['Large', 'Medium', 'Small'];
 
   @override
   void initState() {
@@ -41,7 +40,7 @@ class AddBuildingScreenState extends State<AddBuildingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter un bâtiment'),
+        title: const Text('Connecter ma box'),
       ),
       body: SafeArea(
         child: Center(
@@ -50,34 +49,27 @@ class AddBuildingScreenState extends State<AddBuildingScreen> {
             children: [
               // Bonjour
               Text(
-                'Ajouter un bâtiment',
+                'Entrer les identifiants du réseau Wifi',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
 
               const SizedBox(height: 50),
 
-              // Name field
+              // SSID field
               CustomTextfield(
-                controller: widget.nameController,
+                controller: widget.SSIDController,
                 emailText: false,
-                hintText: "Nom",
+                hintText: "SSID",
                 obscureText: false,
               ),
 
               const SizedBox(height: 20),
-              // Email field
-
-              DropdownButton(
-                value: dropdownvalue,
-                icon: Icon(Icons.keyboard_arrow_down),
-                items: items.map((items) {
-                  return DropdownMenuItem(value: items, child: Text(items));
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    dropdownvalue = newValue;
-                  });
-                },
+              // Pass field
+              CustomTextfield(
+                controller: widget.SSIDController,
+                emailText: false,
+                hintText: "Password",
+                obscureText: false,
               ),
 
               const SizedBox(height: 20),
@@ -91,16 +83,16 @@ class AddBuildingScreenState extends State<AddBuildingScreen> {
                     if (message.startsWith("OK")) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ManagementScreen(),
+                          builder: (context) => BuildingScreen(widget.building),
                         ),
                       );
                     }
                   });
 
                   widget.webSocketChannel.sink.add(
-                      'tocloud//buildings//{"name": "${widget.nameController.text}","type": "${dropdownvalue}"}//insert');
+                      'tocloud//connectbox//{"SSID": "${widget.SSIDController.text}","password": "${widget.passwordController.text},"building_id": ${widget.building}}');
                 },
-                child: const Text('Ajouter un bâtiment'),
+                child: const Text('Valider'),
               ),
             ],
           ),

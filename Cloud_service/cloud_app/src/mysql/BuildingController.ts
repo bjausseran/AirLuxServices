@@ -1,12 +1,28 @@
+import { debug } from "console";
 import { Controller } from "./Controller";
+import { OkPacket, ResultSetHeader } from 'mysql2';
 
 export class BuildingController extends Controller
 {
   constructor(){
     super();
+    this.selectField = `buildings.id, buildings.name, buildings.type`;
     this.tableName = "buildings";
     this.updateStatement = `UPDATE ${this.tableName} SET name = ?, type = ? WHERE id = ?`;
-    this.insertStatement = `INSERT INTO ${this.tableName} (id, name, type) VALUES (?, ?, ?)`;
+    this.insertStatement = `INSERT INTO ${this.tableName} (name, type) VALUES (?, ?)`;
+  }
+  
+  override checkUpdateData(parsedData: any) : boolean{
+    return !parsedData.id || !parsedData.name || !parsedData.type;
+  }
+  override checkInsertData(parsedData: any) : boolean{
+    return !parsedData.name || !parsedData.type || !parsedData.user_id;
+  }
+  override getUpdateData(parsedData: any) : any{
+    return [parsedData.name, parsedData.type, parsedData.id];
+  }
+  override getInsertData(parsedData: any) : any{
+    return [parsedData.name, parsedData.type, parsedData.user_id];
   }
 
   getBuildingByCaptor(captorid: string): Promise<string> {
@@ -47,18 +63,6 @@ export class BuildingController extends Controller
     
   }
     
-  override checkUpdateData(parsedData: any) : boolean{
-    return !parsedData.id || !parsedData.name || !parsedData.type;
-  }
-  override checkInsertData(parsedData: any) : boolean{
-    return !parsedData.name || !parsedData.type || !parsedData.user_id;
-  }
-  override getUpdateData(parsedData: any) : any{
-    return [parsedData.id || !parsedData.name || !parsedData.type || !parsedData.type];
-  }
-  override getInsertData(parsedData: any) : any{
-    return [parsedData.name || !parsedData.type];
-  }
 
   // Function to delete data from the captor_values table
   findByUserId(userid: string): Promise<string> {
@@ -103,32 +107,39 @@ export class BuildingController extends Controller
   // Function to insert data into the buildings table
   override async insert(json: string) {
     const parsedData = JSON.parse(json);
+    
+    console.log(`Add building : parsedData name = ${parsedData.name}`);
+    console.log(`Add building : parsedData type = ${parsedData.type}`);
+    console.log(`Add building : parsedData user_id = ${parsedData.user_id}`);
     // Check for invalid input
     if (this.checkInsertData(parsedData)) {
-      console.error('Invalid input. id, name, type and user_id are required fields.');
+      console.error('Invalid input name, type, user_id are required fields.');
       return;
     }
+    
+    const sql = this.insertStatement;
     this.pool.getConnection(function(err, connection) {
       
       if (err) { console.log(err); return; }// not connected!
-      // Use the connection
-    // SQL query using prepared statement
-    const sqlPivot = 'INSERT INTO user_building (building_id, user_id) VALUES (?, ?)';
-    const pivotData = [parsedData.id, parsedData.user_id];
-  
-    connection.execute(sqlPivot, pivotData, function(err, result) {
+
+      // SQL query using prepared statement
+    const data = [parsedData.name, parsedData.type];
+    
+    connection.execute<ResultSetHeader>(sql, data, async function(err, result) {
       if (err) console.log(err);
-      else console.log('user_building pivot added successfully, result = ' + result);
+      else 
+      {
+        console.log(`Building added successfully, new building id = ${result.insertId}`);
+         const sqlPivot = 'INSERT INTO user_building (building_id, user_id) VALUES (?, ?)';
+        const pivotData = [result.insertId, parsedData.user_id];
+      
+        connection.execute(sqlPivot, pivotData, function(err, result) {
+          if (err) console.log(err);
+          else console.log('user_building pivot added successfully, result = ' + result);
+        });
+      }
     });
-  
-    // SQL query using prepared statement
-    const sql = 'INSERT INTO buildings (id, name, type) VALUES (?, ?, ?)';
-    const data = [parsedData.id, parsedData.name, parsedData.type];
-  
-    connection.execute(sql, data, function(err, result) {
-      if (err) console.log(err);
-      else console.log('Building added successfully');
-    });
+    
     connection.release();
   })
   }

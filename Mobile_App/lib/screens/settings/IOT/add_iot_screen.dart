@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../login_and_signup/login_screen.dart';
+import '../../login_and_signup/login_screen.dart';
 // Import your AddIotScreen
 
 class AddIotScreen extends StatelessWidget {
