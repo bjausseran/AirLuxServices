@@ -8,7 +8,7 @@ export class DeviceController extends Controller
     super();
     this.tableName = "devices";
     this.updateStatement = `UPDATE ${this.tableName} SET apns_token = ? WHERE id = ?`;
-    this.insertStatement = `INSERT INTO ${this.tableName} (id, apns_token) VALUES (?, ?)`;
+    this.insertStatement = `INSERT INTO ${this.tableName} (apns_token) VALUES (?)`;
   }
     
     

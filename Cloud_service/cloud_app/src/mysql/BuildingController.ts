@@ -1,14 +1,15 @@
 import { debug } from "console";
 import { Controller } from "./Controller";
-import { OkPacket } from 'mysql2';
+import { OkPacket, ResultSetHeader } from 'mysql2';
 
 export class BuildingController extends Controller
 {
   constructor(){
     super();
+    this.selectField = `buildings.id, buildings.name, buildings.type`;
     this.tableName = "buildings";
     this.updateStatement = `UPDATE ${this.tableName} SET name = ?, type = ? WHERE id = ?`;
-    this.insertStatement = `INSERT INTO ${this.tableName} (id, name, type) VALUES (?, ?, ?)`;
+    this.insertStatement = `INSERT INTO ${this.tableName} (name, type) VALUES (?, ?)`;
   }
   
   override checkUpdateData(parsedData: any) : boolean{
@@ -18,7 +19,7 @@ export class BuildingController extends Controller
     return !parsedData.name || !parsedData.type || !parsedData.user_id;
   }
   override getUpdateData(parsedData: any) : any{
-    return [parsedData.id, parsedData.name, parsedData.type, parsedData.type];
+    return [parsedData.name, parsedData.type, parsedData.id];
   }
   override getInsertData(parsedData: any) : any{
     return [parsedData.name, parsedData.type, parsedData.user_id];
@@ -115,27 +116,19 @@ export class BuildingController extends Controller
       console.error('Invalid input name, type, user_id are required fields.');
       return;
     }
+    
+    const sql = this.insertStatement;
     this.pool.getConnection(function(err, connection) {
       
       if (err) { console.log(err); return; }// not connected!
 
       // SQL query using prepared statement
-    const sql = 'INSERT INTO buildings (name, type) VALUES (?, ?)';
     const data = [parsedData.name, parsedData.type];
     
-
-
-
-
-
-    
-
-  
-    let result = connection.execute<OkPacket>(sql, data, async function(err, result) {
+    connection.execute<ResultSetHeader>(sql, data, async function(err, result) {
       if (err) console.log(err);
       else 
       {
-
         console.log(`Building added successfully, new building id = ${result.insertId}`);
          const sqlPivot = 'INSERT INTO user_building (building_id, user_id) VALUES (?, ?)';
         const pivotData = [result.insertId, parsedData.user_id];
@@ -144,9 +137,7 @@ export class BuildingController extends Controller
           if (err) console.log(err);
           else console.log('user_building pivot added successfully, result = ' + result);
         });
-
       }
-      
     });
     
     connection.release();

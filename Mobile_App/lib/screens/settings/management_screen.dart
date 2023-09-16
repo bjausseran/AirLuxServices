@@ -70,7 +70,7 @@ class ManagementScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestion batiments'),
+        title: const Text('Gestion du parc'),
       ),
       body: SafeArea(
         child: Column(

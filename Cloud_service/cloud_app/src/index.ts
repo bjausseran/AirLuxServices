@@ -27,8 +27,8 @@ wss.on('connection', (ws) => {
     ws.send('Welcome to the server!');
 
     
-    fsm.setContext('tocloud//buildings//{"name": "Grange","type": "Medium","user_id": 1}//insert', ws, gc);
-    fsm.startFsm(); 
+    // fsm.setContext('tocloud//buildings//{"name": "Grange","type": "Medium","user_id": 1}//insert', ws, gc);
+    // fsm.startFsm(); 
 
     ws.on('message', (message) => {
         console.log(`Received message: ${message}`);

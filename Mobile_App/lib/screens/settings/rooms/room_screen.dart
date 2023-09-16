@@ -9,6 +9,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../globals/models/captor.dart';
 import '../../globals/models/room.dart';
 import '../../globals/user_context.dart' as user_context;
+import '../IOT/object_screen.dart';
 
 class RoomScreen extends StatefulWidget {
   RoomScreen(this.room, {super.key});
@@ -50,29 +51,29 @@ class RoomScreenState extends State<RoomScreen> {
     );
 
     for (int i = 0; i < user_context.captors.length; i++) {
-      var ico = Icons.broadcast_on_home;
-
-      switch (user_context.captors[i].type) {
-        case CaptorType.light:
-          ico = Icons.lightbulb;
-          break;
-        case CaptorType.temp:
-          ico = Icons.thermostat;
-          break;
-        case CaptorType.door:
-          ico = Icons.door_front_door;
-          break;
-        case CaptorType.shutter:
-          ico = Icons.shutter_speed;
-          break;
-        case CaptorType.move:
-          ico = Icons.crisis_alert;
-          break;
-        default:
-          ico = Icons.lightbulb;
-      }
-
       if (user_context.captors[i].roomId == widget.room.id) {
+        var ico = Icons.broadcast_on_home;
+
+        switch (user_context.captors[i].type) {
+          case CaptorType.light:
+            ico = Icons.lightbulb;
+            break;
+          case CaptorType.temp:
+            ico = Icons.thermostat;
+            break;
+          case CaptorType.door:
+            ico = Icons.door_front_door;
+            break;
+          case CaptorType.shutter:
+            ico = Icons.shutter_speed;
+            break;
+          case CaptorType.move:
+            ico = Icons.crisis_alert;
+            break;
+          default:
+            ico = Icons.lightbulb;
+        }
+
         listCaptor.add(
           ListTile(
             leading: Icon(ico),
@@ -81,8 +82,8 @@ class RoomScreenState extends State<RoomScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => RoomScreen(
-                      user_context.rooms[i]), // Navigate to RoomScreen
+                  builder: (context) => CaptorScreen(
+                      user_context.captors[i]), // Navigate to RoomScreen
                 ),
               );
             },
@@ -93,7 +94,7 @@ class RoomScreenState extends State<RoomScreen> {
     listCaptor.add(
       ListTile(
         leading: const Icon(Icons.add),
-        title: Text("Ajouter un objet connecté"),
+        title: const Text("Ajouter un objet connecté"),
         onTap: () {
           Navigator.push(
             context,
@@ -147,7 +148,7 @@ class RoomScreenState extends State<RoomScreen> {
                       });
 
                       widget.webSocketChannel.sink.add(
-                        'tocloud//rooms//{"name": "${widget.nameController.text}","building_id": ${widget.room.buildingId}}//insert',
+                        'tocloud//rooms//{"name": "${widget.nameController.text}","building_id": ${widget.room.buildingId}, "id": ${widget.room.id}}//update',
                       );
                     },
                     child: const Text('Mettre à jour'),

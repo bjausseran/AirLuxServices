@@ -1,20 +1,18 @@
 import 'dart:async';
 
+import 'package:airlux/screens/settings/IOT/add_iot_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../globals/models/building.dart';
+import '../../globals/models/captor.dart';
 import '../../globals/user_context.dart' as user_context;
-import '../IOT/connect_box_screen.dart';
-import '../rooms/room_screen.dart'; // Import your RoomScreen
-import '../rooms/add_room_screen.dart'; // Import your RoomScreen
 
-class BuildingScreen extends StatefulWidget {
-  BuildingScreen(this.building, {super.key});
+class CaptorScreen extends StatefulWidget {
+  CaptorScreen(this.captor, {super.key});
 
-  final Building building;
+  final Captor captor;
 
   // Text editing controllers
   final nameController = TextEditingController();
@@ -23,15 +21,15 @@ class BuildingScreen extends StatefulWidget {
       WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
 
   @override
-  State<StatefulWidget> createState() => BuildingScreenState();
+  State<StatefulWidget> createState() => CaptorScreenState();
 }
 
-class BuildingScreenState extends State<BuildingScreen> {
+class CaptorScreenState extends State<CaptorScreen> {
   StreamSubscription? _subscription;
-  List<Widget> listRoom = [];
+  List<Widget> listButton = [];
 
-  String? dropdownvalue = "Large";
-  var items = ['Large', 'Medium', 'Small'];
+  String? dropdownvalue = "temp";
+  var items = ['temp', 'light', 'door', 'shutter', 'move'];
 
   @override
   void initState() {
@@ -40,62 +38,18 @@ class BuildingScreenState extends State<BuildingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    widget.nameController.text = widget.building.name;
-    dropdownvalue = widget.building.type;
-
-    listRoom.add(
+    widget.nameController.text = widget.captor.name;
+    dropdownvalue = widget.captor.type.toString().split('.').last;
+    listButton.add(
       ListTile(
         leading: const Icon(Icons.settings_input_antenna),
-        title: Text("Connecter ma box"),
+        title: Text("Connecter l'object"),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ConnectBoxScreen(
-                  building: widget.building), // Navigate to ConnectBoxScreen
-            ),
-          );
-        },
-      ),
-    );
-
-    listRoom.add(
-      const ListTile(
-        leading: null,
-        title: Text("Pièces"),
-        enabled: false,
-      ),
-    );
-
-    for (int i = 0; i < user_context.rooms.length; i++) {
-      if (user_context.rooms[i].buildingId == widget.building.id) {
-        listRoom.add(
-          ListTile(
-            leading: const Icon(Icons.window),
-            title: Text(user_context.rooms[i].name),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RoomScreen(
-                      user_context.rooms[i]), // Navigate to RoomScreen
-                ),
-              );
-            },
-          ),
-        );
-      }
-    }
-    listRoom.add(
-      ListTile(
-        leading: const Icon(Icons.add),
-        title: Text("Ajouter une pièce"),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddRoomScreen(
-                  building: widget.building), // Navigate to RoomScreen
+              builder: (context) =>
+                  AddIotScreen(), // Navigate to ConnectBoxScreen
             ),
           );
         },
@@ -104,7 +58,7 @@ class BuildingScreenState extends State<BuildingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Gerer le bâtiment"),
+        title: const Text("Gerer l'object connecté"),
       ),
       body: SafeArea(
         child: Column(
@@ -116,14 +70,14 @@ class BuildingScreenState extends State<BuildingScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    widget.building.name,
+                    widget.captor.name,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 50),
                   CustomTextfield(
                     controller: widget.nameController,
                     emailText: false,
-                    hintText: widget.building.name,
+                    hintText: widget.captor.name,
                     obscureText: false,
                   ),
                   const SizedBox(height: 20),
@@ -153,15 +107,14 @@ class BuildingScreenState extends State<BuildingScreen> {
                         if (message.startsWith("OK")) {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  BuildingScreen(widget.building),
+                              builder: (context) => CaptorScreen(widget.captor),
                             ),
                           );
                         }
                       });
 
                       widget.webSocketChannel.sink.add(
-                        'tocloud//buildings//{"id": ${widget.building.id}, "name": "${widget.nameController.text}", "type": "${dropdownvalue}", "user_id": ${user_context.userId}}//update',
+                        'tocloud//captors//{"id": ${widget.captor.id}, "name": "${widget.nameController.text}", "type": "${dropdownvalue}", "value": ${widget.captor.value}, "roomId": ${widget.captor.roomId}}//update',
                       );
                     },
                     child: const Text('Mettre à jour'),
@@ -172,7 +125,7 @@ class BuildingScreenState extends State<BuildingScreen> {
             // List Section
             Expanded(
               child: ListView(
-                children: listRoom,
+                children: listButton,
               ),
             ),
           ],

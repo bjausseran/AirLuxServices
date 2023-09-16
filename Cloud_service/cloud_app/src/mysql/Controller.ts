@@ -15,13 +15,14 @@ export class Controller{
     pool!: Pool;
     tableName = "";
     
+    selectField = `*`;
     updateStatement = `UPDATE ${this.tableName} SET name = ?, type = ? WHERE id = ?`;
     insertStatement = `INSERT INTO ${this.tableName} (captor_id, value) VALUES (?, ?)`;
 
     constructor(){
         this.pool = mysql.createPool({
-            //host: 'db_cloud',
-            host: 'localhost',
+            host: 'db_cloud',
+            //host: 'localhost',
             user: 'root',
             password: 'admin',
             database: 'AirLuxDB',
@@ -45,7 +46,7 @@ export class Controller{
           // Use the connection
           try {
             // SQL query
-            let sql = `SELECT * FROM ${this.tableName}`;
+            let sql = `SELECT ${this.selectField} FROM ${this.tableName}`;
             sql = join === undefined ? sql : `${sql} LEFT JOIN ${join}`;
             sql = where === undefined ? sql : `${sql} WHERE ${where}`;
             
@@ -86,7 +87,7 @@ export class Controller{
           // Use the connection
           try {
             // SQL query using prepared statement
-            const sql = `SELECT * FROM ${this.tableName} WHERE id = ?`;
+            const sql = `SELECT ${this.selectField} FROM ${this.tableName} WHERE id = ?`;
             const data = [id];
           
             connection.execute(sql, data, function(err, result) {
@@ -154,7 +155,7 @@ export class Controller{
       
       // Check for invalid input
       if (this.checkUpdateData(parsedData)) {
-        console.error('Invalid input. id, name, type and user_id are required fields.');
+        console.error('Invalid input. some fields are required fields.');
         return;
       }
     
