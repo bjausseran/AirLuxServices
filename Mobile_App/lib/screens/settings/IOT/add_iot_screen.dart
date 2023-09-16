@@ -4,7 +4,6 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
   final status = await Permission.bluetoothScan.request();
   if (status.isGranted) {
@@ -20,16 +19,17 @@ void main() async {
     print("Permission Bluetooth refusée");
   }
 }
- class MyApp extends StatelessWidget {
+
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-   @override
+  @override
   Widget build(BuildContext context) {
-     return const MaterialApp(
+    return const MaterialApp(
       home: AddIotScreen(),
     );
   }
- }
+}
 
 class AddIotScreen extends StatefulWidget {
   const AddIotScreen({super.key});
@@ -51,24 +51,23 @@ class _BluetoothAppState extends State<AddIotScreen> {
   }
 
   void startBluetoothScan() async {
-    
-  final status = await Permission.bluetoothConnect.request();
-  final statuScan = await Permission.bluetoothScan.request();
+    final status = await Permission.bluetoothConnect.request();
+    final statuScan = await Permission.bluetoothScan.request();
 
-  if (status.isGranted && statuScan.isGranted) {
-    flutterBlue.startScan(timeout: const Duration(seconds: 4));
+    if (status.isGranted && statuScan.isGranted) {
+      flutterBlue.startScan(timeout: const Duration(seconds: 4));
 
-    flutterBlue.scanResults.listen((scanResultList) {
-      for (ScanResult scanResult in scanResultList) {
-        if (scanResult.device.name == 'AirluxOG') {
-          connectToBluetoothDevice(scanResult.device);
-          break;
+      flutterBlue.scanResults.listen((scanResultList) {
+        for (ScanResult scanResult in scanResultList) {
+          if (scanResult.device.name == 'AirluxOG') {
+            connectToBluetoothDevice(scanResult.device);
+            break;
+          }
         }
-      }
-    });
-  } else {
-    print("Permission BLUETOOTH_CONNECT refusée");
-  }
+      });
+    } else {
+      print("Permission BLUETOOTH_CONNECT refusée");
+    }
   }
 
   void connectToBluetoothDevice(BluetoothDevice device) async {

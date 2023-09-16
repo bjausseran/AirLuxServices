@@ -4,17 +4,21 @@ class Building {
   Building({
     required this.id,
     required this.name,
+    required this.type,
   });
 
-  String id;
+  int id;
   String name;
+  String type;
 
   Building.fromJson(Map<String, dynamic> json)
-      : name = json['name'].toString(),
-        id = json['id'].toString();
+      : name = json['name'],
+        type = json['type'],
+        id = json['id'];
 
   Map<String, dynamic> toJson() => {
         'name': name,
+        'type': type,
         'id': id,
       };
 }

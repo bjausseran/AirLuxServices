@@ -13,6 +13,8 @@ class CustomCard extends StatefulWidget {
   final String? room;
   final Function(bool) onSwitchChanged;
 
+  final bool isValued;
+
   const CustomCard({
     super.key,
     required this.icon,
@@ -23,6 +25,7 @@ class CustomCard extends StatefulWidget {
     required this.pillTextOn,
     required this.pillTextOff,
     required this.switchValue,
+    required this.isValued,
     this.building,
     this.room,
     required this.onSwitchChanged,
@@ -61,16 +64,20 @@ class CustomCardState extends State<CustomCard> {
                   _switchValue ? widget.icon : widget.outlinedIcon,
                   size: 40,
                 ),
-                Text(widget.value),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   decoration: BoxDecoration(
-                    color: _switchValue ? Colors.lime : Colors.grey[200],
+                    color: _switchValue ? Colors.teal : Colors.grey[200],
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     _switchValue ? widget.pillTextOn : widget.pillTextOff,
+                    style: TextStyle(
+                      color: _switchValue
+                          ? Colors.white
+                          : Colors.black, // You can change the text color
+                    ),
                   ),
                 ),
               ],
@@ -104,15 +111,35 @@ class CustomCardState extends State<CustomCard> {
                     ),
                   ],
                 ),
-                Switch(
-                  value: _switchValue,
-                  onChanged: (value) {
-                    setState(() {
-                      _switchValue = value;
-                    });
-                    widget.onSwitchChanged(value);
-                  },
-                ),
+                widget.isValued
+                    ? Container(
+                        width:
+                            50, // Adjust the width and height according to your desired size
+                        height: 50,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors
+                              .teal, // You can change the background color
+                        ),
+                        child: Center(
+                          child: Text(
+                            widget.value,
+                            style: const TextStyle(
+                              color:
+                                  Colors.white, // You can change the text color
+                            ),
+                          ),
+                        ),
+                      )
+                    : Switch(
+                        value: _switchValue,
+                        onChanged: (value) {
+                          setState(() {
+                            _switchValue = value;
+                          });
+                          widget.onSwitchChanged(value);
+                        },
+                      ),
               ],
             ),
           ],

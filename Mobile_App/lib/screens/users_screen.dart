@@ -27,7 +27,8 @@ class UsersScreenState extends State<UsersScreen> {
         pillTextOn: "Autorisé",
         pillTextOff: "Non autorisé",
         switchValue: true,
-        onSwitchChanged: (bool) {}),
+        onSwitchChanged: (bool) {},
+        isValued: false),
     CustomCard(
         icon: Icons.person,
         outlinedIcon: Icons.person_outline,
@@ -37,7 +38,8 @@ class UsersScreenState extends State<UsersScreen> {
         pillTextOn: "Autorisé",
         pillTextOff: "Non autorisé",
         switchValue: true,
-        onSwitchChanged: (bool) {}),
+        onSwitchChanged: (bool) {},
+        isValued: false),
     CustomCard(
         icon: Icons.person,
         outlinedIcon: Icons.person_outline,
@@ -47,7 +49,8 @@ class UsersScreenState extends State<UsersScreen> {
         pillTextOn: "Autorisé",
         pillTextOff: "Non autorisé",
         switchValue: true,
-        onSwitchChanged: (bool) {}),
+        onSwitchChanged: (bool) {},
+        isValued: false),
   ];
 
   @override
@@ -70,7 +73,7 @@ class UsersScreenState extends State<UsersScreen> {
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    backgroundColor: Colors.lime,
+                    backgroundColor: Colors.teal,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

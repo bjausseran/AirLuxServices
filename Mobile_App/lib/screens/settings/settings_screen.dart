@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../login_and_signup/login_screen.dart';
-import 'profil_screen.dart'; // Import your ProfilScreen
-import 'add_iot_screen.dart'; // Import your AddIotScreen
+import 'profil_screen.dart';
+import 'management_screen.dart';
+import 'IOT/add_iot_screen.dart'; // Import your AddIotScreen
 
 import '../globals/user_context.dart' as user_context;
 
@@ -27,7 +28,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Paramètres'),
       ),
       body: SafeArea(
         child: Column(
@@ -46,14 +47,14 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text('Gestion IOT'),
+              leading: const Icon(Icons.broadcast_on_personal),
+              title: const Text('Gestion du parc'),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        const AddIotScreen(), // Navigate to AddIotScreen
+                        ManagementScreen(), // Navigate to AddIotScreen
                   ),
                 );
               },

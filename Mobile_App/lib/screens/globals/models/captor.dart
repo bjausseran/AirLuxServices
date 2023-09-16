@@ -11,9 +11,9 @@ class Captor {
     required this.value,
   });
 
-  String id;
+  int id;
   String name;
-  String roomId;
+  int roomId;
   int value;
   CaptorType type;
 
