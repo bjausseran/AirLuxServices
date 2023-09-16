@@ -20,8 +20,8 @@ export class Controller{
 
     constructor(){
         this.pool = mysql.createPool({
-            host: 'db_cloud',
-            //host: 'localhost',
+            //host: 'db_cloud',
+            host: 'localhost',
             user: 'root',
             password: 'admin',
             database: 'AirLuxDB',

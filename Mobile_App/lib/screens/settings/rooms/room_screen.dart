@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:airlux/screens/settings/add_iot_screen.dart';
+import 'package:airlux/screens/settings/IOT/add_iot_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../globals/models/captor.dart';
-import '../globals/models/room.dart';
-import '../globals/user_context.dart' as user_context;
+import '../../globals/models/captor.dart';
+import '../../globals/models/room.dart';
+import '../../globals/user_context.dart' as user_context;
 
 class RoomScreen extends StatefulWidget {
   RoomScreen(this.room, {super.key});

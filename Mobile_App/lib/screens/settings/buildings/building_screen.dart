@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../globals/models/building.dart';
-import '../globals/user_context.dart' as user_context;
-import 'room_screen.dart'; // Import your RoomScreen
-import 'add_room_screen.dart'; // Import your RoomScreen
+import '../../globals/models/building.dart';
+import '../../globals/user_context.dart' as user_context;
+import '../IOT/connect_box_screen.dart';
+import '../rooms/room_screen.dart'; // Import your RoomScreen
+import '../rooms/add_room_screen.dart'; // Import your RoomScreen
 
 class BuildingScreen extends StatefulWidget {
   BuildingScreen(this.building, {super.key});
@@ -40,6 +41,22 @@ class BuildingScreenState extends State<BuildingScreen> {
   @override
   Widget build(BuildContext context) {
     widget.nameController.text = widget.building.name;
+
+    listRoom.add(
+      ListTile(
+        leading: const Icon(Icons.settings_input_antenna),
+        title: Text("Connecter ma box"),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConnectBoxScreen(
+                  building: widget.building), // Navigate to ConnectBoxScreen
+            ),
+          );
+        },
+      ),
+    );
 
     listRoom.add(
       const ListTile(

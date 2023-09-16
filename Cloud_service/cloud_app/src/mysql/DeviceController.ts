@@ -16,13 +16,13 @@ export class DeviceController extends Controller
     return !parsedData.id || !parsedData.apns_token;
   }
   override checkInsertData(parsedData: any) : boolean{
-    return !parsedData.id || !parsedData.apns_token;
+    return !parsedData.apns_token;
   }
   override getUpdateData(parsedData: any) : any{
     return [parsedData.apns_token, parsedData.id];
   }
   override getInsertData(parsedData: any) : any{
-    return [parsedData.id, parsedData.apns_token];
+    return [parsedData.apns_token];
   }
 
 

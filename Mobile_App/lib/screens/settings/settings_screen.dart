@@ -8,7 +8,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../login_and_signup/login_screen.dart';
 import 'profil_screen.dart';
 import 'management_screen.dart';
-import 'add_iot_screen.dart'; // Import your AddIotScreen
+import 'IOT/add_iot_screen.dart'; // Import your AddIotScreen
 
 class SettingsScreen extends StatelessWidget {
   SettingsScreen({super.key});

@@ -9,7 +9,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   MyApp({super.key});
 
   // This widget is the root our your application.
@@ -18,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo Lint',
       theme: ThemeData(
-          primarySwatch: Colors.lime,
+          primarySwatch: Colors.teal,
           textTheme: const TextTheme(
             titleLarge: TextStyle(
                 fontSize: 36.0,
@@ -29,20 +28,20 @@ class MyApp extends StatelessWidget {
             bodyMedium: TextStyle(fontSize: 16.0),
             bodySmall: TextStyle(fontSize: 14.0),
           ),
-          iconTheme: const IconThemeData(color: Colors.lime),
+          iconTheme: const IconThemeData(color: Colors.teal),
           appBarTheme: AppBarTheme(
               titleTextStyle: Theme.of(context).textTheme.titleLarge,
               elevation: 0,
               backgroundColor: Colors.transparent,
-              actionsIconTheme: const IconThemeData(color: Colors.lime),
-              iconTheme: const IconThemeData(color: Colors.lime)),
+              actionsIconTheme: const IconThemeData(color: Colors.teal),
+              iconTheme: const IconThemeData(color: Colors.teal)),
           inputDecorationTheme: const InputDecorationTheme(
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.black),
               borderRadius: BorderRadius.all(Radius.circular(100)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.lime),
+              borderSide: BorderSide(color: Colors.teal),
             ),
             filled: true,
             hintStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.normal),
@@ -51,13 +50,13 @@ class MyApp extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               textStyle: const TextStyle(fontSize: 20),
-              backgroundColor: Colors.lime,
+              backgroundColor: Colors.teal,
               shape: const StadiumBorder(),
             ),
           ),
           textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-            foregroundColor: Colors.lime,
+            foregroundColor: Colors.teal,
             textStyle: Theme.of(context).textTheme.bodySmall,
           ))),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),

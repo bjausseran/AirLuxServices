@@ -68,11 +68,16 @@ class CustomCardState extends State<CustomCard> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   decoration: BoxDecoration(
-                    color: _switchValue ? Colors.lime : Colors.grey[200],
+                    color: _switchValue ? Colors.teal : Colors.grey[200],
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     _switchValue ? widget.pillTextOn : widget.pillTextOff,
+                    style: TextStyle(
+                      color: _switchValue
+                          ? Colors.white
+                          : Colors.black, // You can change the text color
+                    ),
                   ),
                 ),
               ],
@@ -114,14 +119,14 @@ class CustomCardState extends State<CustomCard> {
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors
-                              .lime, // You can change the background color
+                              .teal, // You can change the background color
                         ),
                         child: Center(
                           child: Text(
                             widget.value,
                             style: const TextStyle(
                               color:
-                                  Colors.black, // You can change the text color
+                                  Colors.white, // You can change the text color
                             ),
                           ),
                         ),
