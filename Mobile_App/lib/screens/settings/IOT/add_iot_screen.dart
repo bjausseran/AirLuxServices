@@ -119,7 +119,7 @@ class _BluetoothAppState extends State<AddIotScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bluetooth App'),
+        title: const Text("Connecter l'objet"),
       ),
       body: Center(
         child: Column(
@@ -129,18 +129,21 @@ class _BluetoothAppState extends State<AddIotScreen> {
               const Text('Aucun appareil Bluetooth connecté')
             else
               Text('Connecté à: ${connectedDevice!.name}'),
+            const SizedBox(height: 50),
             TextFormField(
               controller: idController,
               decoration: const InputDecoration(labelText: 'SSID'),
             ),
+            const SizedBox(height: 20),
             TextFormField(
               controller: passwordController,
               decoration: const InputDecoration(labelText: 'Mot de passe'),
               obscureText: true, // Pour masquer le mot de passe
             ),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: sendDataOverBluetooth,
-              child: const Text('Envoyer ID et mot de passe via Bluetooth'),
+              child: const Text("Connecter l'objet"),
             ),
           ],
         ),

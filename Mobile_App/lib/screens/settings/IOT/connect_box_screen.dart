@@ -22,7 +22,7 @@ class ConnectBoxScreen extends StatefulWidget {
   final passwordController = TextEditingController();
 
   final WebSocketChannel webSocketChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+      WebSocketChannel.connect(Uri.parse('ws://${user_context.serverIP}:6001'));
 
   @override
   State<StatefulWidget> createState() => AddConnectBoxScreenState();

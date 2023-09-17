@@ -18,7 +18,7 @@ class ManagementScreen extends StatelessWidget {
   final passwordController = TextEditingController();
 
   final WebSocketChannel webSocketChannel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:6001'));
+      WebSocketChannel.connect(Uri.parse('ws://${user_context.serverIP}:6001'));
 
   StreamSubscription? _subscription;
 
