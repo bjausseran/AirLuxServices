@@ -48,8 +48,9 @@ class CaptorScreenState extends State<CaptorScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  AddIotScreen(), // Navigate to ConnectBoxScreen
+              builder: (context) => AddIotScreen(
+                captor: widget.captor,
+              ), // Navigate to ConnectBoxScreen
             ),
           );
         },

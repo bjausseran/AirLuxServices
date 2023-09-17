@@ -1,39 +1,43 @@
 import 'dart:convert';
+import 'package:airlux/screens/globals/models/captor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final status = await Permission.bluetoothScan.request();
-  if (status.isGranted) {
-    final flutterBlue = FlutterBlue.instance;
-    final bluetoothState = await flutterBlue.isOn;
+import '../../../widgets/custom_textfield.dart';
 
-    if (bluetoothState) {
-      runApp(const MyApp());
-    } else {
-      print("Le Bluetooth n'est pas activé. Veuillez activer le Bluetooth.");
-    }
-  } else {
-    print("Permission Bluetooth refusée");
-  }
-}
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   final status = await Permission.bluetoothScan.request();
+//   if (status.isGranted) {
+//     final flutterBlue = FlutterBlue.instance;
+//     final bluetoothState = await flutterBlue.isOn;
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+//     if (bluetoothState) {
+//       runApp(const MyApp());
+//     } else {
+//       print("Le Bluetooth n'est pas activé. Veuillez activer le Bluetooth.");
+//     }
+//   } else {
+//     print("Permission Bluetooth refusée");
+//   }
+// }
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: AddIotScreen(),
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const MaterialApp(
+//       home: AddIotScreen(captor: null,),
+//     );
+//   }
+// }
 
 class AddIotScreen extends StatefulWidget {
-  const AddIotScreen({super.key});
+  AddIotScreen({required this.captor, super.key});
 
+  Captor captor;
   @override
   _BluetoothAppState createState() => _BluetoothAppState();
 }
@@ -41,13 +45,30 @@ class AddIotScreen extends StatefulWidget {
 class _BluetoothAppState extends State<AddIotScreen> {
   FlutterBlue flutterBlue = FlutterBlue.instance;
   BluetoothDevice? connectedDevice;
-  TextEditingController idController = TextEditingController();
+  TextEditingController ssidController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  Future<void> checkBluetootPermission() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    final status = await Permission.bluetoothScan.request();
+    if (status.isGranted) {
+      final flutterBlue = FlutterBlue.instance;
+      final bluetoothState = await flutterBlue.isOn;
+
+      if (bluetoothState) {
+        startBluetoothScan();
+      } else {
+        print("Le Bluetooth n'est pas activé. Veuillez activer le Bluetooth.");
+      }
+    } else {
+      print("Permission Bluetooth refusée");
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    startBluetoothScan();
+    checkBluetootPermission();
   }
 
   void startBluetoothScan() async {
@@ -84,7 +105,7 @@ class _BluetoothAppState extends State<AddIotScreen> {
 
   void sendDataOverBluetooth() async {
     if (connectedDevice != null) {
-      final id = idController.text;
+      final id = ssidController.text;
       final password = passwordController.text;
       final serviceUuid = Guid('4fafc201-1fb5-459e-8fcc-c5c9c331914b');
       final characteristicUuid = Guid('beb5483e-36e1-4688-b7f5-ea07361b26a8');
@@ -110,7 +131,7 @@ class _BluetoothAppState extends State<AddIotScreen> {
 
   @override
   void dispose() {
-    idController.dispose();
+    ssidController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -118,36 +139,48 @@ class _BluetoothAppState extends State<AddIotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Connecter l'objet"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (connectedDevice == null)
-              const Text('Aucun appareil Bluetooth connecté')
-            else
-              Text('Connecté à: ${connectedDevice!.name}'),
-            const SizedBox(height: 50),
-            TextFormField(
-              controller: idController,
-              decoration: const InputDecoration(labelText: 'SSID'),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Mot de passe'),
-              obscureText: true, // Pour masquer le mot de passe
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: sendDataOverBluetooth,
-              child: const Text("Connecter l'objet"),
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text("Connecter l'objet"),
         ),
-      ),
-    );
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (connectedDevice == null)
+                  const Text('Aucun appareil Bluetooth connecté')
+                else
+                  Text('Connecté à: ${connectedDevice!.name}'),
+
+                const SizedBox(height: 50),
+
+                // Name field
+                CustomTextfield(
+                  controller: ssidController,
+                  emailText: false,
+                  hintText: "SSID",
+                  obscureText: false,
+                ),
+
+                const SizedBox(height: 20),
+
+                // Name field
+                CustomTextfield(
+                  controller: passwordController,
+                  emailText: false,
+                  hintText: "Mot de passe",
+                  obscureText: true,
+                ),
+
+                const SizedBox(height: 20),
+
+                ElevatedButton(
+                  onPressed: sendDataOverBluetooth,
+                  child: const Text("Connecter l'objet"),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }

@@ -100,8 +100,12 @@ class RoomScreenState extends State<RoomScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => AddIotScreen(
-                  //room: widget.room
-                  ), // Navigate to RoomScreen
+                  captor: Captor(
+                      id: -1,
+                      name: "name",
+                      roomId: widget.room.id,
+                      type: CaptorType.temp,
+                      value: 0)), // Navigate to RoomScreen
             ),
           );
         },
