@@ -32,16 +32,20 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     super.dispose();
-    _subscription?.cancel();
-    widget.webSocketChannel.sink.close();
+    //user_context._subscription?.cancel();
+    //widget.webSocketChannel.sink.close();
   }
 
   Future<void> goToHomeScreen({context = BuildContext}) async {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => HomeScreen(),
-      ),
-    );
+    var res = await user_context.getAllData(widget.webSocketChannel);
+
+    if (res) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    }
   }
 
   @override
@@ -97,8 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 key: const ValueKey('login_button'),
                 onPressed: () {
-                  _subscription =
-                      widget.webSocketChannel.stream.listen((message) {
+                  widget.webSocketChannel.stream.listen((message) {
                     // Handle incoming message here
                     if (message.startsWith("connection//true//")) {
                       var id = int.parse(message.substring(18));

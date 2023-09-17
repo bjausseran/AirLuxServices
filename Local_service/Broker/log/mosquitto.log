@@ -23,3 +23,7 @@
 1694955693: New connection from 172.18.0.6:36984 on port 1883.
 1694955693: New client connected from 172.18.0.6:36982 as mqttjs_31fab3e9 (p2, c1, k60).
 1694955693: New client connected from 172.18.0.6:36984 as mqttjs_5dad7682 (p2, c1, k60).
+1694957532: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1694959333: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1694961134: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1694969268: Saving in-memory database to /mosquitto/data//mosquitto.db.
