@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:airlux/screens/automations_screen.dart';
+import 'package:airlux/screens/globals/models/automation.dart';
+import 'package:airlux/screens/globals/models/automation_value.dart';
 import 'package:airlux/screens/globals/models/building.dart';
 import 'package:airlux/screens/globals/models/room.dart';
 import 'package:airlux/screens/globals/models/user.dart';
@@ -176,13 +179,27 @@ class HomeScreenState extends State<HomeScreen> {
 
           widget.webSocketChannel.sink.add(
               "tocloud//users//join{#}user_building ON users.id = user_building.user_id{#}where{#}user_building.building_id IN ${user_context.concatBuildingsId()}{#}group{#}users.id//get");
-        } else {
+        } else if (user_context.users.isEmpty) {
           Iterable l = json.decode(message);
           var data = List<User>.from(l.map((model) => User.fromJson(model)));
           user_context.users = data;
+          widget.webSocketChannel.sink.add(
+              "tocloud//automations//where{#}automations.user_id IN ${user_context.concatUsersId()}//get");
+        } else if (user_context.automations.isEmpty) {
+          Iterable l = json.decode(message);
+          var data = List<Automation>.from(
+              l.map((model) => Automation.fromJson(model)));
+          user_context.automations = data;
+          widget.webSocketChannel.sink.add(
+              "tocloud//captor_values//where{#}captor_values.automation_id IN ${user_context.concatAutomationsId()}//get");
+        } else if (user_context.automationValues.isEmpty) {
+          Iterable l = json.decode(message);
+          var data = List<AutomationValue>.from(
+              l.map((model) => AutomationValue.fromJson(model)));
+          user_context.automationValues = data;
         }
       } catch (e) {
-        //stderr.writeln(e);
+        stderr.writeln(e);
       }
     });
   }
@@ -291,7 +308,7 @@ class HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AutomationsScreen(),
+                    builder: (context) => AutomationsScreen(),
                   ),
                 );
               } else if (value == 5) {
