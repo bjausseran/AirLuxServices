@@ -151,6 +151,17 @@ class BuildingScreenState extends State<BuildingScreen> {
                           widget.webSocketChannel.stream.listen((message) {
                         // Handle incoming message here
                         if (message.startsWith("OK")) {
+                          user_context.buildings
+                              .firstWhere(
+                                  (element) => element.id == widget.building.id)
+                              .name = widget.nameController.text;
+                          user_context.buildings
+                              .firstWhere(
+                                  (element) => element.id == widget.building.id)
+                              .type = dropdownvalue!;
+
+                          widget.building.name = widget.nameController.text;
+                          widget.building.type = dropdownvalue!;
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>

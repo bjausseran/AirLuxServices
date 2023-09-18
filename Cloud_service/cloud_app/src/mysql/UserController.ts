@@ -5,6 +5,7 @@ export class UserController extends Controller
 {
   constructor(){
     super();
+    this.selectField = `users.id, users.name, users.email`;
     this.tableName = "users";
     this.updateStatement = `UPDATE ${this.tableName} SET name = ?, email = ?, password = ? WHERE id = ?`;
     this.insertStatement = `INSERT INTO ${this.tableName} (name, email, password) VALUES (?, ?, ?)`;
