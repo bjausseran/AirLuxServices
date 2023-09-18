@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:airlux/widgets/custom_textfield.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../globals/models/user.dart';
 import '../globals/user_context.dart' as user_context;
 
 import 'IOT/add_iot_screen.dart'; // Import your AddIotScreen
@@ -25,6 +26,13 @@ class ProfilScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? user;
+    for (int i = 0; i < user_context.users.length; i++) {
+      if (user_context.users[i].id == user_context.userId) {
+        nameController.text = user_context.users[i].name;
+        emailController.text = user_context.users[i].email;
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mon Profil'),

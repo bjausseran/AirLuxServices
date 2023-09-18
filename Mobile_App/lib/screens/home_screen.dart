@@ -4,7 +4,11 @@ import 'dart:convert';
 import 'package:airlux/screens/automations_screen.dart';
 import 'package:airlux/screens/globals/models/building.dart';
 import 'package:airlux/screens/globals/models/room.dart';
+import 'package:airlux/screens/globals/models/user.dart';
+import 'package:airlux/screens/login_and_signup/login_screen.dart';
 import 'package:airlux/screens/palces_screen.dart';
+import 'package:airlux/screens/settings/management_screen.dart';
+import 'package:airlux/screens/settings/profil_screen.dart';
 import 'package:airlux/screens/users_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -79,7 +83,7 @@ class HomeScreenState extends State<HomeScreen> {
 
           widget.webSocketChannel.sink
               .add("tocloud//captors//where{#}room_id IN $str//get");
-        } else {
+        } else if (user_context.captors.isEmpty) {
           // Handle incoming message here
           Iterable l = json.decode(message);
           var data =
@@ -169,6 +173,13 @@ class HomeScreenState extends State<HomeScreen> {
               ));
             }
           });
+
+          widget.webSocketChannel.sink.add(
+              "tocloud//users//join{#}user_building ON users.id = user_building.user_id{#}where{#}user_building.building_id IN ${user_context.concatBuildingsId()}{#}group{#}users.id//get");
+        } else {
+          Iterable l = json.decode(message);
+          var data = List<User>.from(l.map((model) => User.fromJson(model)));
+          user_context.users = data;
         }
       } catch (e) {
         //stderr.writeln(e);
@@ -224,60 +235,70 @@ class HomeScreenState extends State<HomeScreen> {
         centerTitle: false,
         automaticallyImplyLeading: false,
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      SettingsScreen(), // Replace with your SettingsScreen
-                ),
-              );
-            },
-          ),
           PopupMenuButton(
-            icon: const Icon(Icons.add_box_outlined),
+            icon: const Icon(Icons.settings),
             itemBuilder: (context) {
               return [
                 const PopupMenuItem<int>(
                   value: 0,
-                  child: Text("Appareils"),
+                  child: Text("Mon profil"),
                 ),
                 const PopupMenuItem<int>(
                   value: 1,
-                  child: Text("Lieux"),
+                  child: Text("Gestion du parc"),
                 ),
                 const PopupMenuItem<int>(
                   value: 2,
+                  child: Text("Appareils"),
+                ),
+                const PopupMenuItem<int>(
+                  value: 3,
                   child: Text("Utillisateurs"),
                 ),
                 const PopupMenuItem(
-                  value: 3,
+                  value: 4,
                   child: Text("Automatisations"),
-                )
+                ),
+                const PopupMenuItem<int>(
+                  value: 5,
+                  child: Text("Deconnexion"),
+                ),
               ];
             },
             onSelected: (value) {
-              if (value == 1) {
+              if (value == 0) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const PlacesScreen(),
+                    builder: (context) => ProfilScreen(),
                   ),
                 );
-              } else if (value == 2) {
+              } else if (value == 1) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const UsersScreen(),
+                    builder: (context) => ManagementScreen(),
                   ),
                 );
               } else if (value == 3) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
+                    builder: (context) => const UsersScreen(),
+                  ),
+                );
+              } else if (value == 4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
                     builder: (context) => const AutomationsScreen(),
+                  ),
+                );
+              } else if (value == 5) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginScreen(),
                   ),
                 );
               }

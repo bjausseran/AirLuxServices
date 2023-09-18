@@ -54,19 +54,34 @@ CREATE TABLE IF NOT EXISTS AirLuxDB.devices (
 CREATE USER 'root'@'syncapi.docker_iotnetwork' IDENTIFIED BY 'password'; 
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'syncapi.docker_iotnetwork' WITH GRANT OPTION; 
 
-INSERT INTO `AirLuxDB`.`users` (`id`, `email`, `password`, `name`, `device_id`) VALUES ('1', 'test@gmail.com', 'pass', 'Benoît', '1');
+## USERS
+INSERT INTO `AirLuxDB`.`users` (`id`, `email`, `password`, `name`, `device_id`) VALUES ('1', 'test@gmail.com', 'pass', 'Benoit', '1');
 INSERT INTO `AirLuxDB`.`users` (`id`, `email`, `password`, `name`, `device_id`) VALUES ('2', 'test@ynov.com', 'pass', 'Aymeric', '2');
+INSERT INTO `AirLuxDB`.`users` (`id`, `email`, `password`, `name`, `device_id`) VALUES ('3', 'test@airlux.com', 'pass', 'Artus', '3');
+INSERT INTO `AirLuxDB`.`users` (`id`, `email`, `password`, `name`, `device_id`) VALUES ('4', 'test@test.test', 'pass', 'Autre utilisateur', '4');
 
+## BUILDINGS
 INSERT INTO `AirLuxDB`.`buildings` (`id`, `name`, `type`) VALUES ('1', 'Principal', 'Large');
 INSERT INTO `AirLuxDB`.`buildings` (`id`, `name`, `type`) VALUES ('2', 'Secondaire', 'Medium');
 INSERT INTO `AirLuxDB`.`buildings` (`id`, `name`, `type`) VALUES ('3', 'Remise', 'Small');
 INSERT INTO `AirLuxDB`.`buildings` (`id`, `name`, `type`) VALUES ('4', 'Maison', 'Medium');
 
+## USER - BUILDING PIVOT
 INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('1', '1', '1');
 INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('2', '2', '1');
 INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('3', '3', '1');
-INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('4', '4', '2');
 
+INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('4', '1', '2');
+INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('5', '2', '2');
+INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('6', '3', '2');
+
+INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('7', '1', '3');
+INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('8', '2', '3');
+INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('9', '3', '3');
+
+INSERT INTO `AirLuxDB`.`user_building` (`id`, `building_id`, `user_id`) VALUES ('10', '4', '4');
+
+## ROOMS
 INSERT INTO `AirLuxDB`.`rooms` (`id`, `building_id`, `name`) VALUES ('1', '1', 'Salon');
 INSERT INTO `AirLuxDB`.`rooms` (`id`, `building_id`, `name`) VALUES ('2', '1', 'Cuisine');
 INSERT INTO `AirLuxDB`.`rooms` (`id`, `building_id`, `name`) VALUES ('3', '1', 'SdB');
@@ -75,6 +90,8 @@ INSERT INTO `AirLuxDB`.`rooms` (`id`, `building_id`, `name`) VALUES ('5', '2', '
 INSERT INTO `AirLuxDB`.`rooms` (`id`, `building_id`, `name`) VALUES ('6', '3', 'Salle');
 INSERT INTO `AirLuxDB`.`rooms` (`id`, `building_id`, `name`) VALUES ('7', '4', 'Salon');
 
+
+## CAPTORS
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('1', 'Thermo', 'temp', '1');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('2', 'Lustre', 'light', '1');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('3', 'Lumiere', 'light', '2');
@@ -91,6 +108,7 @@ INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('13',
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('14', 'Volet', 'shutter', '2');
 INSERT INTO `AirLuxDB`.`captors` (`id`, `name`, `type`, `room_id`) VALUES ('15', 'Movement', 'move', '3');
 
+## CAPTOR VALUES
 INSERT INTO `AirLuxDB`.`captor_values` (`id`, `captor_id`, `value`) VALUES ('1', '1', '24');
 INSERT INTO `AirLuxDB`.`captor_values` (`id`, `captor_id`, `value`) VALUES ('2', '2', '1');
 INSERT INTO `AirLuxDB`.`captor_values` (`id`, `captor_id`, `value`) VALUES ('3', '3', '1');

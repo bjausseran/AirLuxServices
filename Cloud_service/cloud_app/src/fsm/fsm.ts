@@ -232,6 +232,7 @@ export class FSM {
         let nextData = data?.shift();
         let where: string | undefined;
         let join: string | undefined;
+        let group: string | undefined;
         if(data !== undefined)
         {
             if (nextData === "join") 
@@ -245,9 +246,15 @@ export class FSM {
                 where = data.shift();
                 nextData = data.shift();
             }
+            
+            if (nextData === "group") 
+            {
+                group = data.shift();
+                nextData = data.shift();
+            }
         }
         
-        console.log(`FSM, invokeGet : join =  ${join}, where = ${where}`);
+        console.log(`FSM, invokeGet : join =  ${join}, where = ${where}, group = ${group}`);
 
         if(context.currentController instanceof CaptorController)
         {
@@ -263,7 +270,7 @@ export class FSM {
             })
         }
         else{
-            context.currentController.select(where, join)
+            context.currentController.select(where, join, group)
             .then((jsonString: string) => {
               // Use jsonString, which contains the JSON representation of the query result
               console.log('Query result as JSON:', jsonString);

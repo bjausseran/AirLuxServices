@@ -1,7 +1,8 @@
+import { groupCollapsed } from "console";
 import mysql, { Pool } from "mysql2";
 
 export interface Controller{
-    select(where: string | undefined, join: string | undefined) : Promise<string>;
+    select(where: string | undefined, join: string | undefined, group: string | undefined) : Promise<string>;
     find(id: string) : Promise<string>;
     insert(json: string) : void;
     update(json: string) : void;
@@ -32,10 +33,10 @@ export class Controller{
     
 
     // Function to select data from the buildings table
-    select(where: string | undefined, join: string | undefined): Promise<string> {
+    select(where: string | undefined, join: string | undefined, group: string | undefined): Promise<string> {
       return new Promise<string>((resolve, reject) => {
         
-        console.log(`Controller, select : where = ${where}, join = ${join}`);
+        console.log(`Controller, select : where = ${where}, join = ${join}, group = ${group}`);
   
         this.pool.getConnection((err, connection) => {
           if (err) {
@@ -49,6 +50,7 @@ export class Controller{
             let sql = `SELECT ${this.selectField} FROM ${this.tableName}`;
             sql = join === undefined ? sql : `${sql} LEFT JOIN ${join}`;
             sql = where === undefined ? sql : `${sql} WHERE ${where}`;
+            sql = group === undefined ? sql : `${sql} GROUP BY ${group}`;
             
             console.log('BuildingController, select : sql = ' + sql);
             

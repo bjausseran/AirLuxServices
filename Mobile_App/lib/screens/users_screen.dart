@@ -1,6 +1,8 @@
 import 'package:airlux/widgets/custom_card.dart';
 import 'package:flutter/material.dart';
 
+import 'globals/user_context.dart' as user_context;
+
 import '../widgets/custom_textfield.dart';
 
 class UsersScreen extends StatefulWidget {
@@ -14,47 +16,63 @@ class UsersScreenState extends State<UsersScreen> {
   // Text editing controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final textController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
 
+  late List<CustomCard> cards = List.empty(growable: true);
   // Tableau des cards
-  List<CustomCard> cards = [
-    CustomCard(
-        icon: Icons.person,
-        outlinedIcon: Icons.person_outline,
-        value: "",
-        title: "Aymeric Queret",
-        subtitle: "Autres informations",
-        pillTextOn: "Autorisé",
-        pillTextOff: "Non autorisé",
-        switchValue: true,
-        onSwitchChanged: (bool) {},
-        isValued: false),
-    CustomCard(
-        icon: Icons.person,
-        outlinedIcon: Icons.person_outline,
-        value: "",
-        title: "Benoît Jausseran",
-        subtitle: "Autres informations",
-        pillTextOn: "Autorisé",
-        pillTextOff: "Non autorisé",
-        switchValue: true,
-        onSwitchChanged: (bool) {},
-        isValued: false),
-    CustomCard(
-        icon: Icons.person,
-        outlinedIcon: Icons.person_outline,
-        value: "",
-        title: "Artus Pouillet",
-        subtitle: "Autres informations",
-        pillTextOn: "Autorisé",
-        pillTextOff: "Non autorisé",
-        switchValue: true,
-        onSwitchChanged: (bool) {},
-        isValued: false),
-  ];
+  // List<CustomCard> cards = [
+  //   CustomCard(
+  //       icon: Icons.person,
+  //       outlinedIcon: Icons.person_outline,
+  //       value: "",
+  //       title: "Aymeric Queret",
+  //       subtitle: "Autres informations",
+  //       pillTextOn: "Autorisé",
+  //       pillTextOff: "Non autorisé",
+  //       switchValue: true,
+  //       onSwitchChanged: (bool) {},
+  //       isValued: false),
+  //   CustomCard(
+  //       icon: Icons.person,
+  //       outlinedIcon: Icons.person_outline,
+  //       value: "",
+  //       title: "Benoît Jausseran",
+  //       subtitle: "Autres informations",
+  //       pillTextOn: "Autorisé",
+  //       pillTextOff: "Non autorisé",
+  //       switchValue: true,
+  //       onSwitchChanged: (bool) {},
+  //       isValued: false),
+  //   CustomCard(
+  //       icon: Icons.person,
+  //       outlinedIcon: Icons.person_outline,
+  //       value: "",
+  //       title: "Artus Pouillet",
+  //       subtitle: "Autres informations",
+  //       pillTextOn: "Autorisé",
+  //       pillTextOff: "Non autorisé",
+  //       switchValue: true,
+  //       onSwitchChanged: (bool) {},
+  //       isValued: false),
+  // ];
 
   @override
   Widget build(BuildContext context) {
+    for (int i = 0; i < user_context.users.length; i++) {
+      cards.add(CustomCard(
+          icon: Icons.person,
+          outlinedIcon: Icons.person_outline,
+          value: "",
+          title: user_context.users[i].name,
+          subtitle: user_context.users[i].email,
+          pillTextOn: "Autorisé",
+          pillTextOff: "Non autorisé",
+          switchValue: true,
+          onSwitchChanged: (bool) {},
+          isValued: false));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Utilisateurs'),
@@ -130,7 +148,7 @@ class UsersScreenState extends State<UsersScreen> {
                                 child: Column(
                               children: <Widget>[
                                 CustomTextfield(
-                                  controller: textController,
+                                  controller: lastNameController,
                                   emailText: false,
                                   hintText: 'Nom',
                                   obscureText: false,
@@ -139,7 +157,7 @@ class UsersScreenState extends State<UsersScreen> {
                                 const SizedBox(height: 20),
 
                                 CustomTextfield(
-                                  controller: textController,
+                                  controller: firstNameController,
                                   emailText: false,
                                   hintText: 'Prénom',
                                   obscureText: false,
@@ -171,7 +189,7 @@ class UsersScreenState extends State<UsersScreen> {
                                 CustomTextfield(
                                   controller: passwordController,
                                   emailText: false,
-                                  hintText: 'Connfirmer le mot de passe',
+                                  hintText: 'Confirmer le mot de passe',
                                   obscureText: true,
                                 ),
                               ],
