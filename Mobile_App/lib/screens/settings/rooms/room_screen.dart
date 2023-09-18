@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:airlux/screens/settings/IOT/add_iot_screen.dart';
+import 'package:airlux/screens/settings/rooms/add_room_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:airlux/widgets/custom_textfield.dart';
@@ -91,26 +92,6 @@ class RoomScreenState extends State<RoomScreen> {
         );
       }
     }
-    listCaptor.add(
-      ListTile(
-        leading: const Icon(Icons.add),
-        title: const Text("Ajouter un objet connecté"),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddIotScreen(
-                  captor: Captor(
-                      id: -1,
-                      name: "name",
-                      roomId: widget.room.id,
-                      type: CaptorType.temp,
-                      value: 0)), // Navigate to RoomScreen
-            ),
-          );
-        },
-      ),
-    );
 
     return Scaffold(
       appBar: AppBar(
@@ -121,7 +102,7 @@ class RoomScreenState extends State<RoomScreen> {
           children: [
             // Form Section
             Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -168,6 +149,23 @@ class RoomScreenState extends State<RoomScreen> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddIotScreen(
+                  captor: Captor(
+                      id: -1,
+                      name: "name",
+                      roomId: widget.room.id,
+                      type: CaptorType.temp,
+                      value: 0)), // Navigate to RoomScreen
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

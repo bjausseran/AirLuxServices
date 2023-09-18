@@ -54,20 +54,6 @@ class ManagementScreen extends StatelessWidget {
       ));
     }
 
-    listBuildings.add(ListTile(
-      leading: const Icon(Icons.add),
-      title: Text("Ajouter un bâtiment"),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                AddBuildingScreen(), // Navigate to ProfilScreen
-          ),
-        );
-      },
-    ));
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestion du parc'),
@@ -76,6 +62,18 @@ class ManagementScreen extends StatelessWidget {
         child: Column(
           children: listBuildings,
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  AddBuildingScreen(), // Navigate to RoomScreen
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
