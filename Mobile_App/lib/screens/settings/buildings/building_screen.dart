@@ -86,21 +86,6 @@ class BuildingScreenState extends State<BuildingScreen> {
         );
       }
     }
-    listRoom.add(
-      ListTile(
-        leading: const Icon(Icons.add),
-        title: Text("Ajouter une pièce"),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddRoomScreen(
-                  building: widget.building), // Navigate to RoomScreen
-            ),
-          );
-        },
-      ),
-    );
 
     return Scaffold(
       appBar: AppBar(
@@ -188,6 +173,18 @@ class BuildingScreenState extends State<BuildingScreen> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddRoomScreen(
+                  building: widget.building), // Navigate to RoomScreen
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

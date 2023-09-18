@@ -2,17 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:airlux/screens/automations_screen.dart';
+import 'package:airlux/screens/settings/automations/automations_screen.dart';
 import 'package:airlux/screens/globals/models/automation.dart';
 import 'package:airlux/screens/globals/models/automation_value.dart';
 import 'package:airlux/screens/globals/models/building.dart';
 import 'package:airlux/screens/globals/models/room.dart';
 import 'package:airlux/screens/globals/models/user.dart';
 import 'package:airlux/screens/login_and_signup/login_screen.dart';
-import 'package:airlux/screens/palces_screen.dart';
 import 'package:airlux/screens/settings/management_screen.dart';
 import 'package:airlux/screens/settings/profil_screen.dart';
-import 'package:airlux/screens/users_screen.dart';
+import 'package:airlux/screens/settings/users/users_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:airlux/widgets/custom_card.dart';
@@ -130,7 +129,7 @@ class HomeScreenState extends State<HomeScreen> {
                   textOff = "Off";
                   isValued = true;
                   switchval = true;
-                  val = user_context.captors[i].value.toString() + '°C';
+                  val = '${user_context.captors[i].value}°C';
                   break;
                 case CaptorType.door:
                   ico = Icons.door_front_door;
@@ -301,7 +300,7 @@ class HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const UsersScreen(),
+                    builder: (context) => UsersScreen(),
                   ),
                 );
               } else if (value == 4) {

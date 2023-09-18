@@ -1,10 +1,11 @@
 import { groupCollapsed } from "console";
 import mysql, { Pool } from "mysql2";
+import { OkPacket, ResultSetHeader } from 'mysql2';
 
 export interface Controller{
     select(where: string | undefined, join: string | undefined, group: string | undefined) : Promise<string>;
     find(id: string) : Promise<string>;
-    insert(json: string) : void;
+    insert(json: string) : Promise<string>;
     update(json: string) : void;
     remove(id: string) : void;
 }
@@ -112,16 +113,18 @@ export class Controller{
       });
     }
     // Function to insert data into the captor_values table
-    async insert(json: string) {
+    async insert(json: string) : Promise<string> {
+    return new Promise<string>((resolve, reject) => {
       const parsedData = JSON.parse(json);
       // Check for invalid input
       if (this.checkInsertData(parsedData)) {
         console.error('Invalid input, some fields are required.');
-        return;
+        reject("Error : Invalid input, some fields are required.");
       }
       
           this.pool.getConnection(async (err, connection) => {
-            if (err) { console.log(err); return; }// not connected!
+            if (err) { console.log(err); 
+              reject("database unreachable"); }// not connected!
             // Use the connection
             try {
               // SQL query using prepared statement
@@ -131,13 +134,17 @@ export class Controller{
               console.log('sql = ' + sql);
               console.log('data = ' + data);
             
-              await connection.execute(sql, data, (err, result) => {
+              await connection.execute<ResultSetHeader>(sql, data, (err, result) => {
                 if (err) console.log(err);
-                else console.log(`${this.tableName} added successfully, result = ${result}`);
+                else{ 
+                  console.log(`${this.tableName} added successfully, result = ${result.insertId}`)
+                  resolve('{"id": ' + result.insertId + "}");
+                };
               });
             }
                 
             catch (error) {
+              reject(error);
               console.log(error);
             }
             finally{
@@ -146,7 +153,8 @@ export class Controller{
           })
         
       }
-    
+    )
+  }
     
     // Function to update data in the buildings table
     update(json: string) {

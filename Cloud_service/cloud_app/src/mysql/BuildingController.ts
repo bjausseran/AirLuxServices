@@ -83,7 +83,7 @@ export class BuildingController extends Controller
           const sql = 'SELECT buildings.id, buildings.name FROM buildings LEFT JOIN user_building ON buildings.id = user_building.building_id WHERE user_id = ?';
           const data = [userid];
 
-          connection.execute(sql, data, function(err, result) {
+          connection.execute<ResultSetHeader>(sql, data, function(err, result) {
             if (err) {
               reject(err); // Reject the promise with the query error
               return;
@@ -91,7 +91,7 @@ export class BuildingController extends Controller
   
             console.log('buildings select successfully');
             const jsonString = JSON.stringify(result);
-            resolve(jsonString); // Resolve the promise with the JSON string
+            resolve('{"id": ' + result.insertId + '}'); // Resolve the promise with the JSON string
           });
         } catch (error) {
           console.log(error);
@@ -105,7 +105,8 @@ export class BuildingController extends Controller
   
 
   // Function to insert data into the buildings table
-  override async insert(json: string) {
+  override async insert(json: string) : Promise<string>{
+    return new Promise<string>((resolve, reject) => {
     const parsedData = JSON.parse(json);
     
     console.log(`Add building : parsedData name = ${parsedData.name}`);
@@ -139,6 +140,36 @@ export class BuildingController extends Controller
         });
       }
     });
+    
+    connection.release();
+  })
+  })}
+  
+  // Function to insert data into the buildings table
+  async insertConnection(json: string) {
+    const parsedData = JSON.parse(json);
+    
+    console.log(`Add building : parsedData building_id = ${parsedData.building_id}`);
+    console.log(`Add building : parsedData user_id = ${parsedData.user_id}`);
+    // Check for invalid input
+    if (!parsedData.user_id || !parsedData.building_id) {
+      console.error('Invalid input building_id, user_id are required fields.');
+      return;
+    }
+    
+    const sql = this.insertStatement;
+    this.pool.getConnection(function(err, connection) {
+      
+      if (err) { console.log(err); return; }// not connected!
+      
+    
+    const sqlPivot = 'INSERT INTO user_building (building_id, user_id) VALUES (?, ?)';
+    const pivotData = [parsedData.building_id, parsedData.user_id];
+ 
+   connection.execute<ResultSetHeader>(sqlPivot, pivotData, function(err, result) {
+     if (err) console.log(err);
+     else console.log('user_building pivot added successfully, result = ' + result.insertId);
+   });
     
     connection.release();
   })

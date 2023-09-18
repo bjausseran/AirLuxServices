@@ -11,6 +11,7 @@ import { Controller } from "../mysql/Controller";
 import { WebSocket } from "ws";
 import { Box } from "../models/box";
 import { GlobalContext } from '../models/globalContext';
+import { AutomationController } from "../mysql/AutomationController";
 
 
 class Context{
@@ -25,6 +26,7 @@ class Context{
     rooms: RoomController;
     captors: CaptorController;
     captorValues: CaptorValueController;
+    automations: AutomationController;
 
     done: boolean;
 
@@ -43,6 +45,7 @@ class Context{
         this.rooms = new RoomController();
         this.captors = new CaptorController();
         this.captorValues = new CaptorValueController();
+        this.automations = new AutomationController();
         this.gc = gc;
         this.done = false;
         this.wholeMessage = actions.join("//");
@@ -138,7 +141,8 @@ export class FSM {
                 state.trigger( "end" ); 
             })
             .catch((error) => {
-                console.error(`UError trying to connect, err: ? ${error}`);
+                context.ws.send(`Error trying to connect : ${error}`);
+                console.error(`Error trying to connect : ${error}`);
               })
 
     }
@@ -179,6 +183,7 @@ export class FSM {
             case "rooms": context.currentController = context.rooms;  state.trigger( "rooms" ); break;
             case "captors": context.currentController = context.captors;  state.trigger( "captors" ); break;
             case "captor_values": context.currentController = context.captorValues;  state.trigger( "captor_values" ); break;
+            case "automations": context.currentController = context.automations;  state.trigger( "automations" ); break;
             default: break;
         }
     }
@@ -196,7 +201,16 @@ export class FSM {
         if ( currentMessage === "get" && context.currentController !== undefined) {
             state.trigger( "get" );
         } else if ( currentMessage === "insert"  && context.currentController !== undefined && context.data !== undefined) {
-            context.currentController.insert(context.data);
+            context.currentController.insert(context.data)
+            .then((jsonString: string) => {
+              // Use jsonString, which contains the JSON representation of the query result
+              console.log('Query result as JSON:', jsonString);
+              context.ws.send(jsonString);
+            })
+            .catch((error: any) => {
+              console.error('Error:', error);
+              context.ws.send('Error:', error);
+            });
             const parsedData = JSON.parse(context.data);
             context.ws.send("OK");
             if(context.currentController instanceof CaptorValueController)
@@ -218,6 +232,9 @@ export class FSM {
             state.trigger( "update" );
         } else if ( currentMessage === "delete"&& context.currentController !== undefined && context.data !== undefined ) {
             context.currentController?.remove(context.data);
+            state.trigger( "delete" );
+        }else if ( currentMessage === "conn" && context.data !== undefined ) {
+            context.buildings?.insertConnection(context.data);
             state.trigger( "delete" );
         }
     }
@@ -317,6 +334,7 @@ export class FSM {
         const roomsState = stateMachine.createState( "Rooms state", false, this.parseDataAction);
         const captorsState = stateMachine.createState( "Captors state", false, this.parseDataAction);
         const captorValuesState = stateMachine.createState( "Captor values state", false, this.parseDataAction);
+        const automationsState = stateMachine.createState( "Automation state", false, this.parseDataAction);
         
         const parseDataState = stateMachine.createState( "Parse data state", false, this.statementAction);
         
@@ -345,6 +363,7 @@ export class FSM {
         toCloudState.addTransition( "rooms", roomsState );
         toCloudState.addTransition( "captors", captorsState );
         toCloudState.addTransition( "captor_values", captorValuesState );
+        toCloudState.addTransition( "automations", automationsState );
         
         //PARSE DATA
         usersState.addTransition( "parse", parseDataState );
@@ -353,6 +372,7 @@ export class FSM {
         roomsState.addTransition( "parse", parseDataState );
         captorsState.addTransition( "parse", parseDataState );
         captorValuesState.addTransition( "parse", parseDataState );
+        automationsState.addTransition( "parse", parseDataState );
 
         //FIND STATEMENT
         parseDataState.addTransition( "get", getState );

@@ -24,6 +24,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  void showErrorAlertDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -105,6 +125,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       user_context.userId = id;
 
                       goToHomeScreen(context: context);
+                    } else if (message.startWith("Error")) {
+                      showErrorAlertDialog(context, message);
                     }
                   });
 

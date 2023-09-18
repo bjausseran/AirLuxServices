@@ -5,9 +5,12 @@ import 'package:airlux/widgets/automation_card.dart';
 import 'package:airlux/widgets/custom_card.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'globals/models/user.dart';
-import 'globals/user_context.dart' as user_context;
+import '../../../widgets/custom_textfield.dart';
+import '../../globals/models/user.dart';
+import '../../globals/user_context.dart' as user_context;
 import 'package:intl/intl.dart';
+
+import 'add_automation_screen.dart';
 
 class AutomationsScreen extends StatefulWidget {
   AutomationsScreen({super.key});
@@ -48,11 +51,11 @@ class AutomationsScreenState extends State<AutomationsScreen> {
           // Envoyer les valeurs ici si bool = true
           if (automation.isScheduled) {
             widget.webSocketChannel.sink.add(
-              'tocloud//automations//{"id": ${automation.id}, "name": "${automation.name}", "user_id": ${automation.userId}, "start_date": "${automation.startDate != null ? insertf.format(automation.startDate as DateTime) : "null"}", "frequency": "${automation.frequency == null ? "null" : automation.frequency.toString().split('.')[1]}", "enabled": ${bool ? 1 : 0}, "is_scheduled": ${automation.isScheduled ? 1 : 0}}//update',
+              'tocloud//automations//{"id": ${automation.id}, "name": "${automation.name}", "user_id": ${automation.userId}, "start_date": ${automation.startDate != null ? '"${insertf.format(automation.startDate as DateTime)}"' : "null"}, "frequency": ${automation.frequency == null ? "null" : '"${automation.frequency.toString().split('.')[1]}"'}, "enabled": ${bool ? 1 : 0}, "is_scheduled": ${automation.isScheduled ? 1 : 0}}//update',
             );
           } else {
             widget.webSocketChannel.sink.add(
-              'tocloud//automations//{"id": ${automation.id}, "name": "${automation.name}", "user_id": ${automation.userId}, "start_date": "${automation.startDate != null ? insertf.format(automation.startDate as DateTime) : "null"}", "frequency": "${automation.frequency == null ? "null" : automation.frequency.toString().split('.')[1]}", "enabled": ${bool ? 1 : 0}, "is_scheduled": ${automation.isScheduled ? 1 : 0}}//update',
+              'tocloud//automations//{"id": ${automation.id}, "name": "${automation.name}", "user_id": ${automation.userId}, "start_date": ${automation.startDate != null ? '"${insertf.format(automation.startDate as DateTime)}"' : "null"}, "frequency": ${automation.frequency == null ? "null" : '"${automation.frequency.toString().split('.')[1]}"'}, "enabled": ${bool ? 1 : 0}, "is_scheduled": ${automation.isScheduled ? 1 : 0}}//update',
             );
             for (int i = 0; i < linkedValue.length; i++) {
               widget.webSocketChannel.sink.add(
@@ -69,13 +72,25 @@ class AutomationsScreenState extends State<AutomationsScreen> {
       appBar: AppBar(
         title: const Text('Automatisations'),
       ),
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: cards,
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: cards,
+            ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddAutomationScreen(),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

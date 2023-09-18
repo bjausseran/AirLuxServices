@@ -5,10 +5,10 @@ export class UserController extends Controller
 {
   constructor(){
     super();
-    this.selectField = `users.id, users.name, users.email`;
+    this.selectField = `users.id, users.name, users.email, users.authorized`;
     this.tableName = "users";
-    this.updateStatement = `UPDATE ${this.tableName} SET name = ?, email = ?, password = ? WHERE id = ?`;
-    this.insertStatement = `INSERT INTO ${this.tableName} (name, email, password) VALUES (?, ?, ?)`;
+    this.updateStatement = `UPDATE ${this.tableName} SET name = ?, email = ?, password = ?, authorized = ? WHERE id = ?`;
+    this.insertStatement = `INSERT INTO ${this.tableName} (name, email, password, authorized) VALUES (?, ?, ?, ?)`;
   }
     
     
@@ -19,10 +19,10 @@ export class UserController extends Controller
     return !parsedData.name || !parsedData.email || !parsedData.password;
   }
   override getUpdateData(parsedData: any) : any{
-    return [parsedData.name, parsedData.email, parsedData.password, parsedData.id];
+    return [parsedData.name, parsedData.email, parsedData.password, parsedData.authorized, parsedData.id];
   }
   override getInsertData(parsedData: any) : any{
-    return [parsedData.name, parsedData.email, parsedData.password];
+    return [parsedData.name, parsedData.email, parsedData.password, parsedData.authorized];
   }
 // @ device_id field missing
 connect(email: string, password: string): Promise<string> {
@@ -45,7 +45,10 @@ connect(email: string, password: string): Promise<string> {
               reject(undefined); // Resolve with null if no user was found
             } else {
               console.log('try to connect, results = ' + results[0]['name']);
-              resolve(results[0]['id']); // Resolve with the first user found
+              if(results[0]['authorized'] == 1)
+                resolve(results[0]['id']); // Resolve with the first user found
+              else 
+                reject('Not authorized');
             }
           });
         } catch (error) {
