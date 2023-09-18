@@ -51,6 +51,9 @@ class AutomationsScreenState extends State<AutomationsScreen> {
               'tocloud//automations//{"id": ${automation.id}, "name": "${automation.name}", "user_id": ${automation.userId}, "start_date": "${automation.startDate != null ? insertf.format(automation.startDate as DateTime) : "null"}", "frequency": "${automation.frequency == null ? "null" : automation.frequency.toString().split('.')[1]}", "enabled": ${bool ? 1 : 0}, "is_scheduled": ${automation.isScheduled ? 1 : 0}}//update',
             );
           } else {
+            widget.webSocketChannel.sink.add(
+              'tocloud//automations//{"id": ${automation.id}, "name": "${automation.name}", "user_id": ${automation.userId}, "start_date": "${automation.startDate != null ? insertf.format(automation.startDate as DateTime) : "null"}", "frequency": "${automation.frequency == null ? "null" : automation.frequency.toString().split('.')[1]}", "enabled": ${bool ? 1 : 0}, "is_scheduled": ${automation.isScheduled ? 1 : 0}}//update',
+            );
             for (int i = 0; i < linkedValue.length; i++) {
               widget.webSocketChannel.sink.add(
                   'tocloud//captor_values//{"captor_id":"${linkedValue[i].captorId}", "value": "${bool ? linkedValue[i].automationvalue : linkedValue[i].automationvalue == 0 ? 1 : 0}"}//insert');
