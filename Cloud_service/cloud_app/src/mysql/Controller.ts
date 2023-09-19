@@ -72,7 +72,7 @@ export class Controller{
             reject(error); // Reject the promise with any other errors
           } finally {
 
-            connection.end();
+            connection.release();
 console.log("End MySQL connection");
           }
         });
@@ -112,7 +112,7 @@ console.log("End MySQL connection");
             console.log(error);
             reject(error); // Reject the promise with any other errors
           } finally {
-            connection.end();
+            connection.release();
 console.log("End MySQL connection");
           }
         });
@@ -154,7 +154,7 @@ console.log("End MySQL connection");
               console.log(error);
             }
             finally{
-              connection.end();
+              connection.release();
 console.log("End MySQL connection");
             }
           })
@@ -184,7 +184,7 @@ console.log("End MySQL connection");
         if (err) throw err;
         console.log('item updated successfully, result = ' + result);
       });
-      connection.end();
+      connection.release();
 console.log("End MySQL connection");
     })
     }
@@ -209,7 +209,7 @@ console.log("End MySQL connection");
         if (err) throw err;
         console.log(`${this.tableName} deleted successfully, reuslt = ${result}`);
       });
-      connection.end();
+      connection.release();
 console.log("End MySQL connection");
     })
     }

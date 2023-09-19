@@ -55,7 +55,7 @@ connect(email: string, password: string): Promise<string> {
           console.log(error);
           reject(error); // Reject the promise with any other errors
         } finally {
-          connection.end();
+          connection.release();
 console.log("End MySQL connection");
         }
       });

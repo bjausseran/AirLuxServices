@@ -34,8 +34,8 @@ class HomeScreenState extends State<HomeScreen> {
   Timer? timer;
 
   void setUIUp() {
-    _selectedBuilding = user_context.buildings[0];
-    _selectedRoom = user_context.rooms[0];
+    _selectedBuilding ??= user_context.buildings[0];
+    _selectedRoom ??= user_context.rooms[0];
 
     setState(() {
       allCards.clear();
@@ -159,11 +159,11 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   // Données pour le menu déroulant
-  late Building? _selectedBuilding;
+  Building? _selectedBuilding;
 
   // Index de la pièce sélectionnée
   bool everyRoom = true;
-  late Room? _selectedRoom;
+  Room? _selectedRoom;
 
   // Tableau des cards
   List<CustomCard> allCards = [];
