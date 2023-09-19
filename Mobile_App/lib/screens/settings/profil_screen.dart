@@ -11,7 +11,7 @@ import '../globals/user_context.dart' as user_context;
 
 import 'IOT/add_iot_screen.dart'; // Import your AddIotScreen
 
-class ProfilScreen extends StatelessWidget {
+class ProfilScreen extends StatefulWidget {
   ProfilScreen({super.key});
 
   // Text editing controllers
@@ -23,14 +23,21 @@ class ProfilScreen extends StatelessWidget {
       WebSocketChannel.connect(Uri.parse('ws://${user_context.serverIP}:6001'));
 
   StreamSubscription? _subscription;
+  @override
+  State<StatefulWidget> createState() => ProfilScreenState();
+}
+
+class ProfilScreenState extends State<ProfilScreen> {
+  StreamSubscription? _subscription;
+  List<Widget> listButton = [];
 
   @override
   Widget build(BuildContext context) {
     User? user;
     for (int i = 0; i < user_context.users.length; i++) {
       if (user_context.users[i].id == user_context.userId) {
-        nameController.text = user_context.users[i].name;
-        emailController.text = user_context.users[i].email;
+        widget.nameController.text = user_context.users[i].name;
+        widget.emailController.text = user_context.users[i].email;
       }
     }
     return Scaffold(
@@ -52,7 +59,7 @@ class ProfilScreen extends StatelessWidget {
 
               // Name field
               CustomTextfield(
-                controller: nameController,
+                controller: widget.nameController,
                 emailText: true,
                 hintText: 'Nom',
                 obscureText: false,
@@ -61,7 +68,7 @@ class ProfilScreen extends StatelessWidget {
               const SizedBox(height: 20),
               // Email field
               CustomTextfield(
-                controller: emailController,
+                controller: widget.emailController,
                 emailText: true,
                 hintText: 'E-mail',
                 obscureText: false,
@@ -71,7 +78,7 @@ class ProfilScreen extends StatelessWidget {
 
               // Password field
               CustomTextfield(
-                controller: passwordController,
+                controller: widget.passwordController,
                 emailText: false,
                 hintText: 'Mot de passe',
                 obscureText: true,
@@ -81,7 +88,7 @@ class ProfilScreen extends StatelessWidget {
 
               // Check password field
               CustomTextfield(
-                controller: passwordController,
+                controller: widget.passwordController,
                 emailText: false,
                 hintText: 'Confirmer le mot de passe',
                 obscureText: true,
@@ -92,19 +99,25 @@ class ProfilScreen extends StatelessWidget {
               // Login button
               ElevatedButton(
                 onPressed: () {
-                  _subscription = webSocketChannel.stream.listen((message) {
+                  _subscription =
+                      widget.webSocketChannel.stream.listen((message) async {
                     // Handle incoming message here
                     if (message.startsWith("OK")) {
+                      user_context.retrieveData(WebSocketChannel.connect(
+                          Uri.parse('ws://${user_context.serverIP}:6001')));
+
+                      await Future.delayed(const Duration(seconds: 2));
+
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
+                          builder: (context) => ProfilScreen(),
                         ),
                       );
                     }
                   });
 
-                  webSocketChannel.sink.add(
-                      'tocloud//users//{"name": "${nameController.text}","email": "${emailController.text}", "password": "${passwordController.text}", "id": "${user_context.userId}"}//update');
+                  widget.webSocketChannel.sink.add(
+                      'tocloud//users//{"name": "${widget.nameController.text}","email": "${widget.emailController.text}", "password": "${widget.passwordController.text}", "authorized": 1, "id": "${user_context.userId}"}//update');
                 },
                 child: const Text('Mettre à jour'),
               ),

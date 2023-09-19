@@ -87,9 +87,13 @@ class AddBuildingScreenState extends State<AddBuildingScreen> {
               ElevatedButton(
                 onPressed: () {
                   _subscription =
-                      widget.webSocketChannel.stream.listen((message) {
+                      widget.webSocketChannel.stream.listen((message) async {
                     // Handle incoming message here
-                    if (message.startsWith("OK")) {
+                    if (message.startsWith('{"id":')) {
+                      user_context.retrieveData(WebSocketChannel.connect(
+                          Uri.parse('ws://${user_context.serverIP}:6001')));
+
+                      await Future.delayed(const Duration(seconds: 2));
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ManagementScreen(),

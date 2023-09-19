@@ -10,6 +10,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../globals/models/captor.dart';
 import '../../globals/models/room.dart';
 import '../../globals/user_context.dart' as user_context;
+import '../IOT/add_captor.dart';
 import '../IOT/object_screen.dart';
 
 class RoomScreen extends StatefulWidget {
@@ -120,13 +121,20 @@ class RoomScreenState extends State<RoomScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      _subscription =
-                          widget.webSocketChannel.stream.listen((message) {
+                      _subscription = widget.webSocketChannel.stream
+                          .listen((message) async {
                         // Handle incoming message here
                         if (message.startsWith("OK")) {
+                          user_context.retrieveData(WebSocketChannel.connect(
+                              Uri.parse('ws://${user_context.serverIP}:6001')));
+
+                          await Future.delayed(const Duration(seconds: 2));
+
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => RoomScreen(widget.room),
+                              builder: (context) => RoomScreen(
+                                  user_context.rooms.firstWhere((element) =>
+                                      element.id == widget.room.id)),
                             ),
                           );
                         }
@@ -155,13 +163,8 @@ class RoomScreenState extends State<RoomScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddIotScreen(
-                  captor: Captor(
-                      id: -1,
-                      name: "name",
-                      roomId: widget.room.id,
-                      type: CaptorType.temp,
-                      value: 0)), // Navigate to RoomScreen
+              builder: (context) =>
+                  AddCaptorScreen(room: widget.room), // Navigate to RoomScreen
             ),
           );
         },

@@ -47,6 +47,7 @@ Notes :
 
 docker build -t jausseran/cloud_app --target run -f Dockerfile_cloud_app .
 docker push jausseran/cloud_app
+docker compose up -d cloud_app local_app db_local db_cloud broker
 
 docker build -t jausseran/local_app --target installer -f Dockerfile_local_app .
 docker push jausseran/local_app

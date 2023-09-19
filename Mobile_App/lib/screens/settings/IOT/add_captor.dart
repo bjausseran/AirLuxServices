@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:airlux/screens/globals/models/automation.dart';
+import 'package:airlux/screens/globals/models/captor.dart';
+import 'package:airlux/screens/globals/models/room.dart';
 import 'package:airlux/screens/home_screen.dart';
-import 'package:airlux/screens/settings/automations/automations_screen.dart';
+import 'package:airlux/screens/settings/IOT/object_screen.dart';
 import 'package:airlux/screens/settings/management_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -12,11 +13,13 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../globals/user_context.dart' as user_context;
 
-import '../IOT/add_iot_screen.dart'; // Import your AddIotScreen
+import '../rooms/room_screen.dart';
+import 'add_iot_screen.dart'; // Import your AddIotScreen
 
-class AddAutomationScreen extends StatefulWidget {
-  AddAutomationScreen({super.key});
+class AddCaptorScreen extends StatefulWidget {
+  AddCaptorScreen({required this.room, super.key});
 
+  Room room;
   // Text editing controllers
   final nameController = TextEditingController();
 
@@ -24,15 +27,15 @@ class AddAutomationScreen extends StatefulWidget {
       WebSocketChannel.connect(Uri.parse('ws://${user_context.serverIP}:6001'));
 
   @override
-  State<StatefulWidget> createState() => AddAutomationScreenState();
+  State<StatefulWidget> createState() => AddCaptorScreenState();
 }
 
-class AddAutomationScreenState extends State<AddAutomationScreen> {
+class AddCaptorScreenState extends State<AddCaptorScreen> {
   StreamSubscription? _subscription;
 
-  String? dropdownvalue = 'Large';
+  String? dropdownvalue = 'temp';
 
-  var items = ['Large', 'Medium', 'Small'];
+  var items = ['temp', 'light', 'door', 'shutter', 'move'];
 
   @override
   void initState() {
@@ -43,7 +46,7 @@ class AddAutomationScreenState extends State<AddAutomationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter une automation'),
+        title: const Text('Ajouter un objet'),
       ),
       body: SafeArea(
         child: Center(
@@ -52,7 +55,7 @@ class AddAutomationScreenState extends State<AddAutomationScreen> {
             children: [
               // Bonjour
               Text(
-                'Ajouter un automation',
+                'Ajouter un objet',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
 
@@ -71,7 +74,7 @@ class AddAutomationScreenState extends State<AddAutomationScreen> {
 
               DropdownButton(
                 value: dropdownvalue,
-                icon: Icon(Icons.keyboard_arrow_down),
+                icon: const Icon(Icons.keyboard_arrow_down),
                 items: items.map((items) {
                   return DropdownMenuItem(value: items, child: Text(items));
                 }).toList(),
@@ -97,16 +100,16 @@ class AddAutomationScreenState extends State<AddAutomationScreen> {
                       await Future.delayed(const Duration(seconds: 2));
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => AutomationsScreen(),
+                          builder: (context) => RoomScreen(widget.room),
                         ),
                       );
                     }
                   });
 
                   widget.webSocketChannel.sink.add(
-                      'tocloud//automations//{"name": "${widget.nameController.text}","type": "${dropdownvalue}","user_id": ${user_context.userId}}//insert');
+                      'tocloud//captors//{"name": "${widget.nameController.text}","type": "${dropdownvalue}","room_id": ${widget.room.id}}//insert');
                 },
-                child: const Text('Ajouter un automation'),
+                child: const Text('Ajouter un objet'),
               ),
             ],
           ),
