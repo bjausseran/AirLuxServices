@@ -14,7 +14,7 @@ class Captor {
   int id;
   String name;
   int roomId;
-  int value;
+  int? value;
   CaptorType type;
 
   Captor.fromJson(Map<String, dynamic> json)

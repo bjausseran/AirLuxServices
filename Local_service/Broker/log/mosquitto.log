@@ -74,3 +74,33 @@
 1695079519: Saving in-memory database to /mosquitto/data//mosquitto.db.
 1695080579: mosquitto version 2.0.17 terminating
 1695080579: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695109866: mosquitto version 2.0.17 starting
+1695109866: Config loaded from /mosquitto/config/mosquitto.conf.
+1695109866: Opening ipv4 listen socket on port 1883.
+1695109866: Opening ipv6 listen socket on port 1883.
+1695109866: mosquitto version 2.0.17 running
+1695109869: New connection from 172.18.0.6:33350 on port 1883.
+1695109869: New connection from 172.18.0.6:33352 on port 1883.
+1695109869: New client connected from 172.18.0.6:33350 as mqttjs_84a5f755 (p2, c1, k60).
+1695109869: New client connected from 172.18.0.6:33352 as mqttjs_e1d21fce (p2, c1, k60).
+1695111666: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695113467: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695115268: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695117069: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695118870: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695120671: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695122472: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695123057: Client mqttjs_e1d21fce closed its connection.
+1695123057: Client mqttjs_84a5f755 closed its connection.
+1695123058: mosquitto version 2.0.17 terminating
+1695123058: Saving in-memory database to /mosquitto/data//mosquitto.db.
+1695125847: mosquitto version 2.0.17 starting
+1695125847: Config loaded from /mosquitto/config/mosquitto.conf.
+1695125847: Opening ipv4 listen socket on port 1883.
+1695125847: Opening ipv6 listen socket on port 1883.
+1695125847: mosquitto version 2.0.17 running
+1695125852: New connection from 172.18.0.6:49598 on port 1883.
+1695125852: New connection from 172.18.0.6:49600 on port 1883.
+1695125852: New client connected from 172.18.0.6:49598 as mqttjs_98e5c978 (p2, c1, k60).
+1695125852: New client connected from 172.18.0.6:49600 as mqttjs_15ef42a6 (p2, c1, k60).
+1695127647: Saving in-memory database to /mosquitto/data//mosquitto.db.

@@ -10,6 +10,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../globals/models/captor.dart';
 import '../../globals/models/room.dart';
 import '../../globals/user_context.dart' as user_context;
+import '../IOT/add_captor.dart';
 import '../IOT/object_screen.dart';
 
 class RoomScreen extends StatefulWidget {
@@ -162,13 +163,8 @@ class RoomScreenState extends State<RoomScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddIotScreen(
-                  captor: Captor(
-                      id: -1,
-                      name: "name",
-                      roomId: widget.room.id,
-                      type: CaptorType.temp,
-                      value: 0)), // Navigate to RoomScreen
+              builder: (context) =>
+                  AddCaptorScreen(room: widget.room), // Navigate to RoomScreen
             ),
           );
         },
