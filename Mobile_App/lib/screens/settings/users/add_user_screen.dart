@@ -87,7 +87,8 @@ class AddUserScreen extends StatelessWidget {
               // Login button
               ElevatedButton(
                 onPressed: () {
-                  _subscription = webSocketChannel.stream.listen((message) {
+                  _subscription =
+                      webSocketChannel.stream.listen((message) async {
                     // Handle incoming message here
                     if (message.startsWith("OK")) {}
                     if (message.startsWith('{"id":')) {
@@ -98,6 +99,12 @@ class AddUserScreen extends StatelessWidget {
                         webSocketChannel.sink.add(
                             'tocloud//buildings//{"building_id": ${user_context.buildings[i].id},"user_id": $id}//conn');
                       }
+                      await Future.delayed(const Duration(seconds: 1));
+
+                      user_context.retrieveData(WebSocketChannel.connect(
+                          Uri.parse('ws://${user_context.serverIP}:6001')));
+
+                      await Future.delayed(const Duration(seconds: 2));
 
                       Navigator.of(context).push(
                         MaterialPageRoute(

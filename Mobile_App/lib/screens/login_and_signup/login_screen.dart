@@ -57,6 +57,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> goToHomeScreen({context = BuildContext}) async {
+    widget.webSocketChannel.sink.close();
+    user_context.retrieveData(WebSocketChannel.connect(
+        Uri.parse('ws://${user_context.serverIP}:6001')));
+
+    await Future.delayed(const Duration(seconds: 2));
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => HomeScreen(),

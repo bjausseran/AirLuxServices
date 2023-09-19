@@ -132,32 +132,27 @@ class BuildingScreenState extends State<BuildingScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      _subscription =
-                          widget.webSocketChannel.stream.listen((message) {
+                      _subscription = widget.webSocketChannel.stream
+                          .listen((message) async {
                         // Handle incoming message here
                         if (message.startsWith("OK")) {
-                          user_context.buildings
-                              .firstWhere(
-                                  (element) => element.id == widget.building.id)
-                              .name = widget.nameController.text;
-                          user_context.buildings
-                              .firstWhere(
-                                  (element) => element.id == widget.building.id)
-                              .type = dropdownvalue!;
+                          user_context.retrieveData(WebSocketChannel.connect(
+                              Uri.parse('ws://${user_context.serverIP}:6001')));
 
-                          widget.building.name = widget.nameController.text;
-                          widget.building.type = dropdownvalue!;
+                          await Future.delayed(const Duration(seconds: 2));
+
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  BuildingScreen(widget.building),
+                              builder: (context) => BuildingScreen(
+                                  user_context.buildings.firstWhere((element) =>
+                                      element.id == widget.building.id)),
                             ),
                           );
                         }
                       });
 
                       widget.webSocketChannel.sink.add(
-                        'tocloud//buildings//{"id": ${widget.building.id}, "name": "${widget.nameController.text}", "type": "${dropdownvalue}", "user_id": ${user_context.userId}}//update',
+                        'tocloud//buildings//{"id": ${widget.building.id}, "name": "${widget.nameController.text}", "type": "$dropdownvalue", "user_id": ${user_context.userId}}//update',
                       );
                     },
                     child: const Text('Mettre à jour'),

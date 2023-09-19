@@ -120,13 +120,20 @@ class RoomScreenState extends State<RoomScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      _subscription =
-                          widget.webSocketChannel.stream.listen((message) {
+                      _subscription = widget.webSocketChannel.stream
+                          .listen((message) async {
                         // Handle incoming message here
                         if (message.startsWith("OK")) {
+                          user_context.retrieveData(WebSocketChannel.connect(
+                              Uri.parse('ws://${user_context.serverIP}:6001')));
+
+                          await Future.delayed(const Duration(seconds: 2));
+
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => RoomScreen(widget.room),
+                              builder: (context) => RoomScreen(
+                                  user_context.rooms.firstWhere((element) =>
+                                      element.id == widget.room.id)),
                             ),
                           );
                         }

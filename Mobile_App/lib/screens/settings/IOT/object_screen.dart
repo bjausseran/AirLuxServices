@@ -102,20 +102,26 @@ class CaptorScreenState extends State<CaptorScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      _subscription =
-                          widget.webSocketChannel.stream.listen((message) {
+                      _subscription = widget.webSocketChannel.stream
+                          .listen((message) async {
                         // Handle incoming message here
                         if (message.startsWith("OK")) {
+                          user_context.retrieveData(WebSocketChannel.connect(
+                              Uri.parse('ws://${user_context.serverIP}:6001')));
+
+                          await Future.delayed(const Duration(seconds: 2));
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => CaptorScreen(widget.captor),
+                              builder: (context) => CaptorScreen(
+                                  user_context.captors.firstWhere((element) =>
+                                      element.id == widget.captor.id)),
                             ),
                           );
                         }
                       });
 
                       widget.webSocketChannel.sink.add(
-                        'tocloud//captors//{"id": ${widget.captor.id}, "name": "${widget.nameController.text}", "type": "${dropdownvalue}", "value": ${widget.captor.value}, "roomId": ${widget.captor.roomId}}//update',
+                        'tocloud//captors//{"id": ${widget.captor.id}, "name": "${widget.nameController.text}", "type": "${dropdownvalue}", "room_id": ${widget.captor.roomId}}//update',
                       );
                     },
                     child: const Text('Mettre à jour'),

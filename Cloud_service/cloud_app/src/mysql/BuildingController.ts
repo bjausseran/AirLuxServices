@@ -127,7 +127,10 @@ export class BuildingController extends Controller
     const data = [parsedData.name, parsedData.type];
     
     connection.execute<ResultSetHeader>(sql, data, async function(err, result) {
-      if (err) console.log(err);
+      if (err) {
+        console.log(err);
+        reject(err);
+      }
       else 
       {
         console.log(`Building added successfully, new building id = ${result.insertId}`);
@@ -135,9 +138,14 @@ export class BuildingController extends Controller
         const pivotData = [result.insertId, parsedData.user_id];
       
         connection.execute(sqlPivot, pivotData, function(err, result) {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            reject(err);
+          }
           else console.log('user_building pivot added successfully, result = ' + result);
         });
+
+        resolve('{"id": ' + result.insertId + "}");
       }
     });
     
