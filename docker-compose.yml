@@ -80,21 +80,25 @@ services:
       - MYSQL_COLLATION=utf8mb4_general_ci
 
   db_stats:
-    container_name: db_stat
-    image: bitnami/prometheus
+    image: quay.io/prometheus/prometheus:latest
+    container_name: db_stats
     volumes:
-      - ./Cloud_service/Prometheus:/etc/prometheus
+      - ./Cloud_service/Prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - db_stats-data:/etc/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+#      - '-storage.local.path=/prometheus'
     ports:
       - 9090:9090
+    links:
+      - mysqld-exporter
+      
       
   stats_app:
     container_name: stats_app
     image: grafana/grafana:latest
     environment:
-      - GRAFANA_MYSQL_PASSWORD=password
+      - GRAFANA_MYSQL_PASSWORD=admin
       - GF_SECURITY_ADMIN_PASSWORD=secret
       - GF_ALERTING_EXECUTE_ALERTS=false
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -108,10 +112,10 @@ services:
   mysqld-exporter:
     container_name: mysqld-exporter
     image: quay.io/prometheus/mysqld-exporter
+    restart: unless-stopped
     command:
-     - --collect.info_schema.tablestats
-    environment:
-      - DATA_SOURCE_NAME=root:password@(db_cloud:3306)/
+     - "--mysqld.username=root:admin"
+     - "--mysqld.address=db_cloud:3306"
     ports:
       - 9104:9104
   # ----------

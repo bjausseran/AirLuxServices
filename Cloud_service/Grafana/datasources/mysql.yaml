@@ -5,7 +5,7 @@ datasources:
     type: mysql
     url: db_cloud:3306
     database: AirLuxDB
-    user: grafana
+    user: root
     jsonData:
       maxOpenConns: 0 # Grafana v5.4+
       maxIdleConns: 2 # Grafana v5.4+
