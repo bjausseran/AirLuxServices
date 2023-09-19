@@ -16,6 +16,8 @@ int userId = -1;
 String serverIP = "localhost";
 //String serverIP = "192.168.196.72";
 
+bool done = false;
+
 List<Building> buildings = List.empty(growable: true);
 List<Room> rooms = List.empty(growable: true);
 List<Captor> captors = List.empty(growable: true);
@@ -64,6 +66,7 @@ String concatUsersId() {
 }
 
 void retrieveData(WebSocketChannel webSocketChannel) {
+  done = false;
   buildings.clear();
   rooms.clear();
   captors.clear();
@@ -105,6 +108,7 @@ void retrieveData(WebSocketChannel webSocketChannel) {
         users = data;
         webSocketChannel.sink.add(
             "tocloud//automations//where{#}automations.user_id IN ${concatUsersId()}//get");
+        done = true;
       } else if (automations.isEmpty) {
         Iterable l = json.decode(message);
         var data =
@@ -117,6 +121,29 @@ void retrieveData(WebSocketChannel webSocketChannel) {
         var data = List<AutomationValue>.from(
             l.map((model) => AutomationValue.fromJson(model)));
         automationValues = data;
+      }
+    } catch (e) {
+      stderr.writeln(e);
+    }
+  });
+}
+
+void retrieveCaptorData(WebSocketChannel webSocketChannel) {
+  done = false;
+  captors.clear();
+
+  webSocketChannel.sink
+      .add("tocloud//captors//where{#}room_id IN ${concatRoomsId()}//get");
+
+  webSocketChannel.stream.listen((message) {
+    // Données pour le menu déroulant
+    try {
+      if (captors.isEmpty) {
+        // Handle incoming message here
+        Iterable l = json.decode(message);
+        var data = List<Captor>.from(l.map((model) => Captor.fromJson(model)));
+        captors = data;
+        done = true;
       }
     } catch (e) {
       stderr.writeln(e);

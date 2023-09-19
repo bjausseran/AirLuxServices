@@ -123,10 +123,12 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void updateData() async {
-    user_context.retrieveData(WebSocketChannel.connect(
+    user_context.retrieveCaptorData(WebSocketChannel.connect(
         Uri.parse('ws://${user_context.serverIP}:6001')));
 
-    await Future.delayed(const Duration(seconds: 2));
+    while (!user_context.done) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
 
     setUIUp();
   }
@@ -134,7 +136,7 @@ class HomeScreenState extends State<HomeScreen> {
   void initTimer() {
     if (timer != null && timer!.isActive) return;
 
-    timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (ModalRoute.of(context)!.isCurrent) {
         //job
         updateData();

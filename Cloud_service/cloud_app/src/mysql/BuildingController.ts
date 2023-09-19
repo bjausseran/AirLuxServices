@@ -56,7 +56,8 @@ export class BuildingController extends Controller
             console.log(error);
             reject(error); // Reject the promise with any other errors
           } finally {
-            connection.release();
+            connection.end();
+console.log("End MySQL connection");
           }
         });
       });
@@ -97,7 +98,8 @@ export class BuildingController extends Controller
           console.log(error);
           reject(error); // Reject the promise with any other errors
         } finally {
-          connection.release();
+          connection.end();
+console.log("End MySQL connection");
         }
       });
     });
@@ -149,7 +151,8 @@ export class BuildingController extends Controller
       }
     });
     
-    connection.release();
+    connection.end();
+console.log("End MySQL connection");
   })
   })}
   
@@ -179,7 +182,8 @@ export class BuildingController extends Controller
      else console.log('user_building pivot added successfully, result = ' + result.insertId);
    });
     
-    connection.release();
+    connection.end();
+console.log("End MySQL connection");
   })
   }
   

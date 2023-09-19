@@ -19,6 +19,12 @@ services:
     environment:
       PULSOR_ID: "1"
       
+  pulsor6:
+    container_name: pulsor6
+    image: jausseran/pulsor
+    environment:
+      PULSOR_ID: "6"
+      
   actuator:
     image: jausseran/actuator
     container_name: actuator
@@ -104,7 +110,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_SECURITY_ADMIN_USER=admin
     volumes:
-      - ./Grafana/datasources/:/usr/share/grafana/conf/provisioning/datasources/
+      - ./Cloud_service/Grafana/datasources/:/usr/share/grafana/conf/provisioning/datasources/
       - stats_app-data:/var/lib/grafana
     ports:
       - 3000:3000

@@ -20,13 +20,13 @@ class Context{
     data: string | undefined = "";
     wholeMessage: string;
 
-    users: UserController;
-    devices: DeviceController;
-    buildings: BuildingController;
-    rooms: RoomController;
-    captors: CaptorController;
-    captorValues: CaptorValueController;
-    automations: AutomationController;
+    // gc.users: UserController;
+    // gc.devices: DeviceController;
+    // gc.buildings: BuildingController;
+    // gc.rooms: RoomController;
+    // gc.captors: CaptorController;
+    // gc.captorValues: CaptorValueController;
+    // gc.automations: AutomationController;
 
     done: boolean;
 
@@ -39,17 +39,10 @@ class Context{
     constructor(actions: string[], ws: WebSocket, gc: GlobalContext) {
         this.ws = ws;
         this.actions = actions;
-        this.users = new UserController();
-        this.devices = new DeviceController();
-        this.buildings = new BuildingController();
-        this.rooms = new RoomController();
-        this.captors = new CaptorController();
-        this.captorValues = new CaptorValueController();
-        this.automations = new AutomationController();
         this.gc = gc;
         this.done = false;
         this.wholeMessage = actions.join("//");
-        console.log(`Controllers : constructor, users = ${this.users}, devices = ${this.devices}`);
+        console.log(`Controllers : constructor, gc.users = ${this.gc.users}, gc.devices = ${this.gc.devices}`);
     }
 
     toString(): string{
@@ -95,11 +88,11 @@ export class FSM {
 
         switch (currentMessage) {
             case "box": 
-                context.currentController = context.users; 
+                context.currentController = context.gc.users; 
                 state.trigger( "boxConnection" );
                 break;
             case "user": 
-                context.currentController = context.devices; 
+                context.currentController = context.gc.devices; 
                 state.trigger( "userConnection" ); 
                 break;
             default: break;
@@ -131,7 +124,7 @@ export class FSM {
         if(email == null || password == null) return;
 
         let isAuth = false; 
-        context.users.connect(email, password)
+        context.gc.users.connect(email, password)
             .then((id: string) => {
 
                 isAuth = id !== undefined;
@@ -177,13 +170,13 @@ export class FSM {
         const currentMessage = context.actions.shift();
         console.log(`FSM : action = table, context = {${context.toString()}}, message = ${currentMessage}`);
         switch (currentMessage) {
-            case "users": context.currentController = context.users; state.trigger( "users" );break;
-            case "devices": context.currentController = context.devices; state.trigger( "devices" ); break;
-            case "buildings": context.currentController = context.buildings;  state.trigger( "buildings" ); break;
-            case "rooms": context.currentController = context.rooms;  state.trigger( "rooms" ); break;
-            case "captors": context.currentController = context.captors;  state.trigger( "captors" ); break;
-            case "captor_values": context.currentController = context.captorValues;  state.trigger( "captor_values" ); break;
-            case "automations": context.currentController = context.automations;  state.trigger( "automations" ); break;
+            case "users": context.currentController = context.gc.users; state.trigger( "users" );break;
+            case "devices": context.currentController = context.gc.devices; state.trigger( "devices" ); break;
+            case "buildings": context.currentController = context.gc.buildings;  state.trigger( "buildings" ); break;
+            case "rooms": context.currentController = context.gc.rooms;  state.trigger( "rooms" ); break;
+            case "captors": context.currentController = context.gc.captors;  state.trigger( "captors" ); break;
+            case "captor_values": context.currentController = context.gc.captorValues;  state.trigger( "captor_values" ); break;
+            case "automations": context.currentController = context.gc.automations;  state.trigger( "automations" ); break;
             default: break;
         }
     }
@@ -217,7 +210,7 @@ export class FSM {
             {
                 context.captorid = parsedData["captor_id"];
                 context.captorvalue = parsedData["value"];
-                context.buildings.getBuildingByCaptor(context.captorid).then(
+                context.gc.buildings.getBuildingByCaptor(context.captorid).then(
                     (result) => {
                         const parsed = JSON.parse(result)[0]["building_id"];
                         console.log(`FSM : action = statement, send action to building#${parsed}`);
@@ -234,7 +227,7 @@ export class FSM {
             context.currentController?.remove(context.data);
             state.trigger( "delete" );
         }else if ( currentMessage === "conn" && context.data !== undefined ) {
-            context.buildings?.insertConnection(context.data);
+            context.gc.buildings?.insertConnection(context.data);
             state.trigger( "delete" );
         }
     }
@@ -275,7 +268,7 @@ export class FSM {
 
         if(context.currentController instanceof CaptorController)
         {
-            context.captors.getCaptorWithLastData(where!)
+            context.gc.captors.getCaptorWithLastData(where!)
             .then((jsonString: string) => {
               // Use jsonString, which contains the JSON representation of the query result
               console.log('Query result as JSON:', jsonString);
@@ -310,6 +303,13 @@ export class FSM {
         //perform mysql request and/or send message to local
         console.log(`FSM : final action, state = ${state}}, context ${context}`);
         context.done = true;
+        // if(context.gc.users.pool != null) { context.gc.users.pool.end(); console.log(`FSM : final action, end gc.users pool`)};
+        // if(context.gc.devices.pool != null) { context.gc.devices.pool.end(); console.log(`FSM : final action, end gc.devices pool`)};
+        // if(context.gc.rooms.pool != null) { context.gc.rooms.pool.end(); console.log(`FSM : final action, end gc.rooms pool`)};
+        // if(context.gc.captors.pool != null) { context.gc.captors.pool.end(); console.log(`FSM : final action, end gc.captors pool`)};
+        // if(context.gc.captorValues.pool != null) { context.gc.captorValues.pool.end(); console.log(`FSM : final action, end gc.captorValues pool`)};
+        // if(context.gc.automations.pool != null) { context.gc.automations.pool.end(); console.log(`FSM : final action, end gc.automations pool`)};
+        
         context.currentController = undefined;
         context.data = undefined;
         
@@ -322,17 +322,17 @@ export class FSM {
         const directionState = stateMachine.createState( "Direction state", false, this.directionAction, this.exitAction); // Trivial use of exit action as an example.
         
         const connectState = stateMachine.createState( "Connexion state", false, this.connectionAction, this.exitAction); // Trivial use of exit action as an example.
-        const connectUserState = stateMachine.createState( "Connect user state", false, this.tryConnectUser, this.exitAction); // Trivial use of exit action as an example.
+        const connectuserstate = stateMachine.createState( "Connect user state", false, this.tryConnectUser, this.exitAction); // Trivial use of exit action as an example.
         const connectBoxState = stateMachine.createState( "Connect box state", false, this.tryConnectBox, this.exitAction); // Trivial use of exit action as an example.
         
         const toLocalState = stateMachine.createState( "To local state", false, this.tableAction);
         const toCloudState = stateMachine.createState( "To cloud state", false, this.tableAction);
 
-        const usersState = stateMachine.createState( "Users state", false, this.parseDataAction);
-        const devicesState = stateMachine.createState( "Devices state", false, this.parseDataAction);
-        const buildingsState = stateMachine.createState( "Buildings state", false, this.parseDataAction);
-        const roomsState = stateMachine.createState( "Rooms state", false, this.parseDataAction);
-        const captorsState = stateMachine.createState( "Captors state", false, this.parseDataAction);
+        const usersState = stateMachine.createState( "users state", false, this.parseDataAction);
+        const devicesState = stateMachine.createState( "devices state", false, this.parseDataAction);
+        const buildingsState = stateMachine.createState( "buildings state", false, this.parseDataAction);
+        const roomsState = stateMachine.createState( "rooms state", false, this.parseDataAction);
+        const captorsState = stateMachine.createState( "captors state", false, this.parseDataAction);
         const captorValuesState = stateMachine.createState( "Captor values state", false, this.parseDataAction);
         const automationsState = stateMachine.createState( "Automation state", false, this.parseDataAction);
         
@@ -351,10 +351,10 @@ export class FSM {
         directionState.addTransition( "tocloud", toCloudState );
         directionState.addTransition( "connect", connectState );
 
-        connectState.addTransition( "userConnection", connectUserState );
+        connectState.addTransition( "userConnection", connectuserstate );
         connectState.addTransition( "boxConnection", connectBoxState );
         // TO LOCAL/CLOUD
-        connectUserState.addTransition( "end", endState );
+        connectuserstate.addTransition( "end", endState );
         connectBoxState.addTransition( "end", endState );
 
         toCloudState.addTransition( "users", usersState );

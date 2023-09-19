@@ -109,7 +109,10 @@ class CaptorScreenState extends State<CaptorScreen> {
                           user_context.retrieveData(WebSocketChannel.connect(
                               Uri.parse('ws://${user_context.serverIP}:6001')));
 
-                          await Future.delayed(const Duration(seconds: 2));
+                          while (!user_context.done) {
+                            await Future.delayed(
+                                const Duration(milliseconds: 100));
+                          }
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => CaptorScreen(

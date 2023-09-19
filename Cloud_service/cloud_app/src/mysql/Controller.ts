@@ -22,13 +22,16 @@ export class Controller{
     insertStatement = `INSERT INTO ${this.tableName} (captor_id, value) VALUES (?, ?)`;
 
     constructor(){
+      console.log('Create MySQL pool')
         this.pool = mysql.createPool({
             host: 'db_cloud',
             //host: 'localhost',
             user: 'root',
             password: 'admin',
             database: 'AirLuxDB',
-            connectionLimit: 10,
+            connectionLimit: 5,
+            waitForConnections: true,
+            queueLimit: 0
         })
     }
     
@@ -68,7 +71,9 @@ export class Controller{
             console.log(error);
             reject(error); // Reject the promise with any other errors
           } finally {
-            connection.release();
+
+            connection.end();
+console.log("End MySQL connection");
           }
         });
       });
@@ -107,7 +112,8 @@ export class Controller{
             console.log(error);
             reject(error); // Reject the promise with any other errors
           } finally {
-            connection.release();
+            connection.end();
+console.log("End MySQL connection");
           }
         });
       });
@@ -139,7 +145,7 @@ export class Controller{
                 else{ 
                   console.log(`${this.tableName} added successfully, result = ${result.insertId}`)
                   resolve('{"id": ' + result.insertId + "}");
-                };
+                }
               });
             }
                 
@@ -148,7 +154,8 @@ export class Controller{
               console.log(error);
             }
             finally{
-              connection.release();
+              connection.end();
+console.log("End MySQL connection");
             }
           })
         
@@ -177,7 +184,8 @@ export class Controller{
         if (err) throw err;
         console.log('item updated successfully, result = ' + result);
       });
-      connection.release();
+      connection.end();
+console.log("End MySQL connection");
     })
     }
     
@@ -201,7 +209,8 @@ export class Controller{
         if (err) throw err;
         console.log(`${this.tableName} deleted successfully, reuslt = ${result}`);
       });
-      connection.release();
+      connection.end();
+console.log("End MySQL connection");
     })
     }
 
