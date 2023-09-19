@@ -115,7 +115,8 @@ class _BluetoothAppState extends State<AddIotScreen> {
         if (service.uuid == serviceUuid) {
           for (final characteristic in service.characteristics) {
             if (characteristic.uuid == characteristicUuid) {
-              final dataToSend = utf8.encode("$id,$password");
+              final dataToSend =
+                  utf8.encode("$id,$password,${widget.captor.id}");
               await characteristic.write(dataToSend, withoutResponse: true);
               print("Données envoyées avec succès à l'appareil Bluetooth");
               return;
