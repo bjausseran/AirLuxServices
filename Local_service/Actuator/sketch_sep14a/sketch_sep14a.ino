@@ -1,8 +1,3 @@
-/*
-    Based on Neil Kolban example for IDF: https://github.com/nkolban/esp32-snippets/blob/master/cpp_utils/tests/BLE%20Tests/SampleServer.cpp
-    Ported to Arduino ESP32 by Evandro Copercini
-    updates by chegewara
-*/
 
 #include <BLEDevice.h>
 #include <BLEUtils.h>
@@ -31,7 +26,44 @@ PubSubClient client(wifiClient);
 
 void setup() {
   Serial.begin(115200);
-  //pinMode(buttonPin, INPUT_PULLUP);  
+  pinMode(16, OUTPUT);
+}
+
+void setup_mqtt(){
+  client.setServer("192.168.90.122", 1883);
+  client.setCallback(callback);//Déclaration de la fonction de souscription
+  reconnect();
+}
+
+void callback(char* topic, byte *payload, unsigned int length) {
+   Serial.println("-------Nouveau message du broker mqtt-----");
+   Serial.print("Canal:");
+   Serial.println(topic);
+   Serial.print("donnee:");
+   Serial.write(payload, length);
+   Serial.println();
+   if ((char)payload[0] == '1') {
+     Serial.println("LED ON");
+      digitalWrite(16,HIGH); 
+   } else {
+     Serial.println("LED OFF");
+     digitalWrite(16,LOW); 
+   }
+ }
+void reconnect(){
+  while (!client.connected()) {
+    Serial.println("Connection au serveur MQTT ...");
+    if (client.connect("esp")){
+      Serial.println("MQTT connecté");
+      client.subscribe("home/captor_values/2/action");//souscription au topic led pour commander une led
+    }
+    else {
+      Serial.print("echec, code erreur= ");
+      Serial.println(client.state());
+      Serial.println("nouvel essai dans 2s");
+    delay(2000);
+    }
+  }
 }
 
 void SM_s1_bluetooth() {  
@@ -91,14 +123,20 @@ void SM_s1_bluetooth() {
           }
           Serial.println(F("WiFi connected, IP address: "));
           Serial.println(WiFi.localIP());
-          IPAddress server(192,168,150,72);
+          IPAddress server(192, 168, 90, 122);
           if(Ping.ping(server)){
             Serial.println(F("Ping successful!!"));
           }
+          setup_mqtt();
+          client.publish("esp/test", "Hello from ESP32");
           state_wifi=1;
         }
         break; // N'oubliez pas d'ajouter le "break" ici pour quitter le cas 0.
       case 1:
+        if(!client.connected()){
+          reconnect();
+        }
+        client.loop(); 
         // Traitement pour l'état 1
         break; 
     }
